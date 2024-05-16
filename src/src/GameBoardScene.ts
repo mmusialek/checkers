@@ -8,6 +8,7 @@ export class GameBoardScene extends Phaser.Scene {
 
     private _gameBoard: GameSquere[][] = [];
     private _selectedSquere: GameSquere | null = null;
+    private textImg!: phaser.GameObjects.Text;
 
     constructor() {
         super("GameBoardScene");
@@ -27,6 +28,7 @@ export class GameBoardScene extends Phaser.Scene {
     create(): void {
         this.drawBoard();
         this.drawPawns();
+        this.initStats();
 
         window.addEventListener('resize', () => {
             this.drawBoard();
@@ -37,26 +39,27 @@ export class GameBoardScene extends Phaser.Scene {
             if (!target || target.length === 0) return;
             const topTarget = target[0];
             const { x, y } = topTarget;
-            const gameSquere = this.getGameSquereByCoords({ x, y });
+            const targetSquere = this.getGameSquereByCoords({ x, y });
 
-            if (GameBoardConst.playerPawns.includes(gameSquere.pawnType)) {
+            if (GameBoardConst.playerPawns.includes(targetSquere.pawnType)) {
                 if (this._selectedSquere) {
-                    const isTheSame = this._selectedSquere?.name == gameSquere.name;
+                    const isTheSame = this._selectedSquere?.name == targetSquere.name;
                     this.clearSelection();
 
                     if (!isTheSame)
-                        this.selectPawn(gameSquere);
+                        this.selectPawn(targetSquere);
                 }
                 else {
-                    this.selectPawn(gameSquere);
+                    this.selectPawn(targetSquere);
                 }
-            } else if (this._selectedSquere && gameSquere.pawnType == GamePawnType.shadow) {
+            } else if (this._selectedSquere && targetSquere.pawnType == GamePawnType.shadow) {
                 const { pawnType } = this._selectedSquere;
                 this._selectedSquere.removePawn();
 
-                const img = this.getNewImage(gameSquere.wordPosition, pawnType)
-                gameSquere.changePawn(pawnType, img);
+                const img = this.getNewImage(targetSquere.wordPosition, pawnType)
+                targetSquere.changePawn(pawnType, img);
                 this._selectedSquere = null;
+                this.updateStats();
             }
         });
 
@@ -85,8 +88,8 @@ export class GameBoardScene extends Phaser.Scene {
                 const { x: selectedPosX, y: selectedPosY } = this._selectedSquere?.position;
 
                 const multiplier = this._selectedSquere.pawnType === GamePawnType.black ? -1 : 1;
-                const canMove = Math.abs((selectedPosX - posX)) == 1 && (selectedPosY - posY) == (1 * multiplier);                
-                
+                const canMove = Math.abs((selectedPosX - posX)) == 1 && (selectedPosY - posY) == (1 * multiplier);
+
                 const pawnType = canMove ? GamePawnType.shadow : GamePawnType.notAllowed;
                 const img = this.getNewImage(targetSquere.wordPosition, pawnType).setInteractive();
                 targetSquere.addPawn(pawnType, img);
@@ -123,11 +126,24 @@ export class GameBoardScene extends Phaser.Scene {
     private selectPawn(pawn: GameSquere) {
         this._selectedSquere = pawn;
         this._selectedSquere.select();
+        this.updateStats();
     }
 
     private clearSelection() {
         this._selectedSquere?.unselect();
         this._selectedSquere = null;
+        this.updateStats();
+    }
+
+    private updateStats() {
+        const text = "selected: " + (this._selectedSquere?.name || "-");
+        this.textImg.setText(text);
+    }
+
+    private initStats() {
+        const { x, y } = getBoardPos(9, 0)
+        const text = "selected: -";
+        this.textImg = this.add.text(x, y, text || "x", { fontFamily: GameBoardConst.fontFamily, color: "magenta" }).setOrigin(.5, .5);
     }
 
     private initializeBoard() {
@@ -139,8 +155,6 @@ export class GameBoardScene extends Phaser.Scene {
                 this._gameBoard[row][col] = gs;
             }
         }
-
-        // names
     }
 
     private drawPawns() {
