@@ -13,7 +13,13 @@ export const GameBoardConst = {
     return [this.numRows - 1, this.numRows - 2]
   },
 
+  boardOffset: 50,
+
   get originOffset() {
     return this.tileSize / 2;
   },
+
+
+  // dispaly things
+  fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
 }

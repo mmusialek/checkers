@@ -56,6 +56,7 @@ export class GameBoardScene extends Phaser.Scene {
 
                 const img = this.getNewImage(gameSquere.wordPosition, pawnType)
                 gameSquere.changePawn(pawnType, img);
+                this._selectedSquere = null;
             }
         });
 
@@ -66,34 +67,29 @@ export class GameBoardScene extends Phaser.Scene {
 
             const topTarget = target[0];
             const { x, y } = topTarget;
-            const gameSquere = this.getGameSquereByCoords({ x, y });
-            const { x: posX, y: posY } = gameSquere.position;
+            const targetSquere = this.getGameSquereByCoords({ x, y });
+            const { x: posX, y: posY } = targetSquere.position;
 
-            if (!gameSquere) {
+            if (!targetSquere) {
                 console.log("on pointerover: gameSquere not found!")
                 return;
             }
 
-            if (gameSquere.pawnType !== GamePawnType.none)
+            if (targetSquere.pawnType !== GamePawnType.none || this._selectedSquere)
                 this.input.setDefaultCursor("pointer");
 
-            if (GameBoardConst.playerPawns.includes(gameSquere.pawnType) && !this._selectedSquere) {
-                gameSquere.select();
+            if (GameBoardConst.playerPawns.includes(targetSquere.pawnType) && !this._selectedSquere) {
+                targetSquere.select();
             }
-            else if (gameSquere.pawnType === GamePawnType.none) {
+            else if (targetSquere.pawnType === GamePawnType.none && this._selectedSquere) {
+                const { x: selectedPosX, y: selectedPosY } = this._selectedSquere?.position;
 
-                if (this._selectedSquere) {
-
-                    const { x: selectedPosX, y: selectedPosY } = this._selectedSquere?.position;
-
-                    if (Math.abs(selectedPosX - posX) == 1 && (Math.abs(selectedPosY - posY) == 1)) {
-                        const img = this.getNewImage(gameSquere.wordPosition, GamePawnType.shadow)
-                        gameSquere.addPawn(GamePawnType.shadow, img);
-                    } else {
-                        const img = this.getNewImage(gameSquere.wordPosition, GamePawnType.notAllowed)
-                        gameSquere.addPawn(GamePawnType.notAllowed, img);
-                    }
-                }
+                const multiplier = this._selectedSquere.pawnType === GamePawnType.black ? -1 : 1;
+                const canMove = Math.abs((selectedPosX - posX)) == 1 && (selectedPosY - posY) == (1 * multiplier);                
+                
+                const pawnType = canMove ? GamePawnType.shadow : GamePawnType.notAllowed;
+                const img = this.getNewImage(targetSquere.wordPosition, pawnType).setInteractive();
+                targetSquere.addPawn(pawnType, img);
             }
 
         });
@@ -143,6 +139,8 @@ export class GameBoardScene extends Phaser.Scene {
                 this._gameBoard[row][col] = gs;
             }
         }
+
+        // names
     }
 
     private drawPawns() {
@@ -173,9 +171,30 @@ export class GameBoardScene extends Phaser.Scene {
                 this.getNewImage({ x, y }, color).setInteractive();
 
                 const gs = this.getGameSquereByCoords({ x, y });
-                const text = gs?.name;
-                this.add.text(x, y, text || "x", { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif', color: "magenta" }).setOrigin(.5, .5);
+                const text = gs.name;
+                this.add.text(x, y, text || "x", { fontFamily: GameBoardConst.fontFamily, color: "magenta" }).setOrigin(.5, .5);
             }
+        }
+
+        // draw board names
+
+        const namesOffsetX = GameBoardConst.originOffset + GameBoardConst.boardOffset;
+        const namesOffsetY = (GameBoardConst.tileSize * 8) + 20 + GameBoardConst.boardOffset;
+        for (let i = 0; i < GameBoardConst.numRows; i++) {
+            const x = (i * GameBoardConst.tileSize) + namesOffsetX;
+
+            const text = String.fromCharCode(65 + i);
+            this.add.text(x, namesOffsetY, text || "x", { fontFamily: GameBoardConst.fontFamily, color: "red", fontSize: 17, fontStyle: "300" }).setOrigin(.5, .5);
+        }
+
+
+        const verticalNamesX = GameBoardConst.boardOffset / 2;
+        const numbersOffsetY = GameBoardConst.originOffset + GameBoardConst.boardOffset;
+        for (let i = 0; i < GameBoardConst.numCols; i++) {
+            const y = (i * GameBoardConst.tileSize) + numbersOffsetY;
+
+            const text = (i + 1).toFixed();
+            this.add.text(verticalNamesX, y, text || "x", { fontFamily: GameBoardConst.fontFamily, color: "red", fontSize: 17, fontStyle: "300" }).setOrigin(.5, .5);
         }
     }
 
