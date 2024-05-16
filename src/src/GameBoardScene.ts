@@ -1,79 +1,13 @@
 import { GameBoardConst } from "./GameBoardConst";
+import { GameSquere } from "./GameSquere";
 import { getArrayPos, getBoardPos } from "./GameUtils";
-import { GamePawnType, PawnSpritesMap, Point } from "./types";
+import { BoardSquereType, GamePawnType, ImageSpritesMap, ImageType, PawnSpritesMap, Point } from "./types";
 import * as phaser from "phaser";
-
-class GameSquere {
-    private _image: phaser.GameObjects.Image | null | undefined;
-
-    private readonly _wordPoint: Point;
-    private _point: Point;
-
-    private _pawnType: GamePawnType = GamePawnType.none;
-
-    constructor(row: number, col: number) {
-        this._point = { x: col, y: row };
-        this._wordPoint = getBoardPos(col, row);
-    }
-
-    get name(): string {
-        return `${this._point.x}-${this._point.y}`;
-    }
-
-    get pawnType(): GamePawnType {
-        return this._pawnType;
-    }
-
-    get image() {
-        return this._image;
-    }
-
-    get wordPosition(): Point {
-        return this._wordPoint;
-    }
-
-    get position(): Point {
-        return this._point;
-    }
-
-    addPawn(type: GamePawnType, image: phaser.GameObjects.Image) {
-        this.setPawnType(type);
-        this.setImage(image);
-    }
-
-    removePawn() {
-        this.setPawnType(GamePawnType.none);
-        this.clearImage();
-    }
-
-    select() {
-        this.image?.setAlpha(.7);
-    }
-
-    unselect() {
-        this.image?.setAlpha(1);
-    }
-
-    private setPawnType(type: GamePawnType) {
-        this._pawnType = type;
-    }
-
-    private setImage(image: phaser.GameObjects.Image) {
-        this._image = image;
-    }
-
-    private clearImage() {
-        this._image?.destroy(true);
-        this._image = null;
-    }
-}
 
 export class GameBoardScene extends Phaser.Scene {
 
     private _gameBoard: GameSquere[][] = [];
     private _selectedSquere: GameSquere | null = null;
-
-    private shadowPawn: GameSquere | null | undefined;
 
     constructor() {
         super("GameBoardScene");
@@ -105,7 +39,7 @@ export class GameBoardScene extends Phaser.Scene {
             const { x, y } = topTarget;
             const gameSquere = this.getGameSquereByCoords({ x, y });
 
-            if (gameSquere.pawnType != GamePawnType.none && GameBoardConst.playerPawns.includes(gameSquere.pawnType)) {
+            if (GameBoardConst.playerPawns.includes(gameSquere.pawnType)) {
                 if (this._selectedSquere) {
                     const isTheSame = this._selectedSquere?.name == gameSquere.name;
                     this.clearSelection();
@@ -116,6 +50,12 @@ export class GameBoardScene extends Phaser.Scene {
                 else {
                     this.selectPawn(gameSquere);
                 }
+            } else if (this._selectedSquere && gameSquere.pawnType == GamePawnType.shadow) {
+                const { pawnType } = this._selectedSquere;
+                this._selectedSquere.removePawn();
+
+                const img = this.getNewImage(gameSquere.wordPosition, pawnType)
+                gameSquere.changePawn(pawnType, img);
             }
         });
 
@@ -127,7 +67,6 @@ export class GameBoardScene extends Phaser.Scene {
             const topTarget = target[0];
             const { x, y } = topTarget;
             const gameSquere = this.getGameSquereByCoords({ x, y });
-            const { x: wordPosX, y: wordPosY } = gameSquere.wordPosition;
             const { x: posX, y: posY } = gameSquere.position;
 
             if (!gameSquere) {
@@ -148,10 +87,10 @@ export class GameBoardScene extends Phaser.Scene {
                     const { x: selectedPosX, y: selectedPosY } = this._selectedSquere?.position;
 
                     if (Math.abs(selectedPosX - posX) == 1 && (Math.abs(selectedPosY - posY) == 1)) {
-                        const img = this.add.image(wordPosX, wordPosY, PawnSpritesMap[GamePawnType.shadow]).setName(GamePawnType.shadow);
+                        const img = this.getNewImage(gameSquere.wordPosition, GamePawnType.shadow)
                         gameSquere.addPawn(GamePawnType.shadow, img);
                     } else {
-                        const img = this.add.image(wordPosX, wordPosY, PawnSpritesMap[GamePawnType.notAllowed]).setName(GamePawnType.notAllowed);
+                        const img = this.getNewImage(gameSquere.wordPosition, GamePawnType.notAllowed)
                         gameSquere.addPawn(GamePawnType.notAllowed, img);
                     }
                 }
@@ -216,9 +155,8 @@ export class GameBoardScene extends Phaser.Scene {
 
                 if (blackPawn || whitePawn) {
                     const pawnType = blackPawn ? GamePawnType.black : GamePawnType.white;
-                    const { x, y } = getBoardPos(col, row);
-                    const img = this.add.image(x, y, PawnSpritesMap[pawnType] as string).setName(gameSquere.pawnType)
-                        .setInteractive();
+                    const img = this.getNewImage(gameSquere.wordPosition, pawnType);
+                    img.setInteractive();
 
                     gameSquere.addPawn(pawnType, img);
                 }
@@ -231,11 +169,8 @@ export class GameBoardScene extends Phaser.Scene {
         for (let row = 0; row < GameBoardConst.numRows; row++) {
             for (let col = 0; col < GameBoardConst.numCols; col++) {
                 const { x, y } = getBoardPos(col, row);
-                // const color = (row + col) % 2 === 0 ? 0xffffff : 0x000000; // Alternating colors
-                const color = (row + col) % 2 === 0 ? "white_squere" : "black_squere"; // Alternating colors
-
-                this.add.image(x, y, color).setName(color)
-                    .setInteractive();
+                const color = (row + col) % 2 === 0 ? BoardSquereType.whiteSquere : BoardSquereType.blackSquere; // Alternating colors
+                this.getNewImage({ x, y }, color).setInteractive();
 
                 const gs = this.getGameSquereByCoords({ x, y });
                 const text = gs?.name;
@@ -244,17 +179,14 @@ export class GameBoardScene extends Phaser.Scene {
         }
     }
 
-    // private getBoardPos(x: number, y: number) {
-    //     return { x: ((x * GameBoardConst.tileSize) + GameBoardConst.originOffset), y: ((y * GameBoardConst.tileSize) + GameBoardConst.originOffset) };
-    // }
-
-    // private getArrayPos(x: number, y: number) {
-    //     return { x: ((x - GameBoardConst.originOffset) / GameBoardConst.tileSize) || 0, y: ((y - GameBoardConst.originOffset) / GameBoardConst.tileSize) || 0 };
-    // }
-
     private getGameSquereByCoords(point: Point) {
         const { x, y } = getArrayPos(point.x, point.y);
         const gameSquere = this._gameBoard[y][x];
         return gameSquere;
+    }
+
+    private getNewImage(point: Point, type: ImageType) {
+        const { x, y } = point
+        return this.add.image(x, y, ImageSpritesMap[type]).setName(type);
     }
 }
