@@ -31,3 +31,14 @@ export const getNewText = (phaseAdd: phaser.GameObjects.GameObjectFactory, point
     const newStyle = style ? { ...defaultStyles, ...style } : defaultStyles;
     return phaseAdd.text(x, y, text, newStyle).setOrigin(.5, .5);
 }
+
+
+
+export const getDirection = (pointA: Point, pointB: Point): Point => {
+    return { x: pointA.x - pointB.x, y: pointA.y - pointB.y }
+}
+
+
+export const addToPoint = (point: Point, value: number): Point => {
+    return { x: point.x + value, y: point.y - value }
+}

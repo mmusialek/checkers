@@ -1,15 +1,16 @@
 import { GameSquere } from "./GameSquere";
 import { TurnManager } from "./TurnManager";
 import { GameBoardConst } from "./GameBoardConst";
-import { GamePawnType } from "./types";
+import { GamePawnType, Point } from "./types";
+import { addToPoint, getDirection, getGameSquereByCoords } from "./GameUtils";
 
 export class GameMaster {
-    private readonly _gameSquere: GameSquere[][];
+    private readonly _gameBoard: GameSquere[][];
     private readonly _turnManager: TurnManager;
     private _selectedSquere: GameSquere | null = null;
 
-    constructor(gameSquere: GameSquere[][], turnManager: TurnManager) {
-        this._gameSquere = gameSquere;
+    constructor(gameBoard: GameSquere[][], turnManager: TurnManager) {
+        this._gameBoard = gameBoard;
         this._turnManager = turnManager;
     }
 
@@ -44,24 +45,40 @@ export class GameMaster {
             return GamePawnType.none;
         }
 
-        const { x: posX, y: posY } = target.position;
-        const { x: selectedPosX, y: selectedPosY } = this.selectedSquere?.position;
 
+        const direction = getDirection(this.selectedSquere!.position, target.position);
+
+        const canMoveToTarget = (range: number) => {
+            const canMove = Math.abs(direction.x) == range && direction.y == (range * multiplier);
+            return canMove;
+        }
+        const multiplier = this.selectedSquere.pawnType === GamePawnType.black ? -1 : 1;
+        const multiplierDirection = this.selectedSquere.pawnType === GamePawnType.black ? 1 : -1;
         const hasEmptySpace = target.pawnType === GamePawnType.none;
 
-        const multiplier = this.selectedSquere.pawnType === GamePawnType.black ? -1 : 1;
-        const canMove = Math.abs((selectedPosX - posX)) == 1 && (selectedPosY - posY) == (1 * multiplier);
+        const prevCoords = addToPoint(target.position, 1 * multiplierDirection)
+        const prevGameSquere = this._gameBoard[prevCoords.y][prevCoords.x];
+        
+        // detect if has fight with enemy pawns
+        if (canMoveToTarget(2) && prevGameSquere.pawnType === this._turnManager.opponentType) {
+            const pawnType = (hasEmptySpace) ? GamePawnType.shadow : GamePawnType.notAllowed;
 
-        const pawnType = (canMove && hasEmptySpace) ? GamePawnType.shadow : GamePawnType.notAllowed;
+            // TODO remove enemy pawn, score points
+            return pawnType;
+        }
 
-        return pawnType;
+        // can move if next place is free
+        if (canMoveToTarget(1)) {
+            const pawnType = (hasEmptySpace) ? GamePawnType.shadow : GamePawnType.notAllowed;
+            return pawnType;
+        }
+
+
+        return GamePawnType.notAllowed;
     }
 
     canPlacePawn(target: GameSquere) {
         return this._selectedSquere && target.hasEffect(GamePawnType.shadow);
-    }
-
-    private canTakeEnemyPawn() {
     }
 
     // action methods

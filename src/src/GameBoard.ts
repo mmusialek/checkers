@@ -17,10 +17,11 @@ export class GameBoard implements IGameLoopObject {
 
     constructor(phaserScene: IPhaserScene) {
         this._phaserScene = phaserScene;
+        this.initializeBoard();
+
         this._turnManager = new TurnManager();
         this._boardSats = new BoardStats(phaserScene, this._turnManager);
         this._gameMaster = new GameMaster(this._gameBoard, this._turnManager);
-        this.initializeBoard();
     }
 
     // loop methods
