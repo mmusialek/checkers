@@ -3,13 +3,12 @@ import { BoardSquereType, GamePawnType, Point } from "./types";
 import * as phaser from "phaser";
 
 export class GameSquere {
-    private _image: phaser.GameObjects.Image | null | undefined;
-    private _suggestionImage: phaser.GameObjects.Image | null | undefined;
+    private _pawn: Pawn | null = null;
+    private _effects: Pawn[] = [];
 
     private readonly _wordPoint: Point;
     private _point: Point;
 
-    private _pawnType: GamePawnType = GamePawnType.none;
     private _boardSquereType: BoardSquereType;
 
     constructor(row: number, col: number) {
@@ -27,11 +26,7 @@ export class GameSquere {
     }
 
     get pawnType(): GamePawnType {
-        return this._pawnType;
-    }
-
-    get image() {
-        return this._image;
+        return this._pawn?.pawnType || GamePawnType.none;
     }
 
     get wordPosition(): Point {
@@ -42,36 +37,32 @@ export class GameSquere {
         return this._point;
     }
 
-    addPawn(type: GamePawnType, image: phaser.GameObjects.Image) {
-        this.removePawn();
-        this.setPawnType(type);
-        this.setImage(image);
+    addEffect(pawn: Pawn) {
+        this._effects.push(pawn);
+    }
+
+    removeEffects() {
+        for (const item of this._effects) {
+            item.removePawn();
+        }
+        this._effects.splice(0, this._effects.length);
+    }
+
+    hasEffect(type: GamePawnType) {
+        return this._effects.some(q => q.pawnType == type);
+    }
+
+    addPawn(pawn: Pawn) {
+        this._pawn = pawn;
     }
 
     removePawn() {
-        this.clearImage();
+        this._pawn?.removePawn();
+        this._pawn = null;
     }
 
-    highlight() {
-        this.image?.setAlpha(0.7);
-    }
-
-    unHighlight() {
-        this.image?.setAlpha(1);
-    }
-
-    private setPawnType(type: GamePawnType) {
-        this._pawnType = type;
-    }
-
-    private setImage(image: phaser.GameObjects.Image) {
-        this._image = image;
-    }
-
-    private clearImage() {
-        this.setPawnType(GamePawnType.none);
-        this._image?.destroy();
-        this._image = null;
+    get pawn() {
+        return this._pawn;
     }
 }
 

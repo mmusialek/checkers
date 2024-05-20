@@ -1,0 +1,15 @@
+gamedev
+-------------
+
+asprite
+bosca ceoil
+
+effects / game music
+bfxr - efekty
+https://freesound.org/
+https://musiclab.chromeexperiments.com/Song-Maker/
+
+
+AI music
+https://suno.com/
+https://www.udio.com/pricing

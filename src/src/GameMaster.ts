@@ -26,7 +26,12 @@ export class GameMaster {
 
 
     canSuggestPawn(target: GameSquere) {
-        return (target.pawnType === GamePawnType.none || this._turnManager.opponentType === target.pawnType) && this.selectedSquere !== null;
+
+        const hasEffect = GameBoardConst.suggestionPawns.reduce((prev, curr) => {
+            return prev || target.hasEffect(curr);
+        }, false);
+
+        return (target.pawnType === GamePawnType.none || this._turnManager.opponentType === target.pawnType) && this.selectedSquere !== null && !hasEffect;
     }
 
     canRemoveSuggestPawn(target: GameSquere) {
@@ -42,16 +47,18 @@ export class GameMaster {
         const { x: posX, y: posY } = target.position;
         const { x: selectedPosX, y: selectedPosY } = this.selectedSquere?.position;
 
+        const hasEmptySpace = target.pawnType === GamePawnType.none;
+
         const multiplier = this.selectedSquere.pawnType === GamePawnType.black ? -1 : 1;
         const canMove = Math.abs((selectedPosX - posX)) == 1 && (selectedPosY - posY) == (1 * multiplier);
 
-        const pawnType = canMove ? GamePawnType.shadow : GamePawnType.notAllowed;
+        const pawnType = (canMove && hasEmptySpace) ? GamePawnType.shadow : GamePawnType.notAllowed;
 
         return pawnType;
     }
 
     canPlacePawn(target: GameSquere) {
-        return this._selectedSquere && target.pawnType == GamePawnType.shadow;
+        return this._selectedSquere && target.hasEffect(GamePawnType.shadow);
     }
 
     private canTakeEnemyPawn() {
@@ -61,7 +68,7 @@ export class GameMaster {
 
     setSelectedPawn(pawn: GameSquere) {
         this._selectedSquere = pawn;
-        this._selectedSquere.highlight();
+        this._selectedSquere.pawn?.highlight();
         // this._boardSats.updateStats();
     }
 
@@ -71,22 +78,8 @@ export class GameMaster {
     }
 
     clearSelectedPawn() {
-        this._selectedSquere?.unHighlight();
+        this._selectedSquere?.pawn?.unHighlight();
         this._selectedSquere = null;
         // this._boardSats.updateStats();
     }
-
-    // private placePawn(target: GameSquere) {
-    //     if (!this._selectedSquere)
-    //         return;
-
-    //     const { pawnType } = this._selectedSquere;
-    //     this._selectedSquere.removePawn();
-
-    //     const img = this.getNewImage(target.wordPosition, pawnType)
-    //     target.changePawn(pawnType, img);
-    //     this._selectedSquere = null;
-    //     // this.updateStats();
-    // }
-
 }

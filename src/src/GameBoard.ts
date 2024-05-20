@@ -1,6 +1,6 @@
 import phaser from "phaser";
 import { TurnManager } from "./TurnManager";
-import { GameSquere } from "./GameSquere";
+import { GameSquere, Pawn } from "./GameSquere";
 import { GameBoardConst } from "./GameBoardConst";
 import { getBoardPos, getGameSquereByCoords, getNewImage, getNewText } from "./GameUtils";
 import { GamePawnType, BoardSquereType, Point, ImageType, IPhaserScene, IGameLoopObject } from "./types";
@@ -70,7 +70,7 @@ export class GameBoard implements IGameLoopObject {
             // show pointer
             if (this._gameMaster.canSelectPawn(targetSquere)) {
                 this._phaserScene.input.setDefaultCursor("pointer");
-                targetSquere.highlight();
+                targetSquere.pawn?.highlight();
             }
             else if (this._gameMaster.canSuggestPawn(targetSquere)) {
                 const pawnType = this._gameMaster.getPawnSuggestion(targetSquere);
@@ -78,8 +78,8 @@ export class GameBoard implements IGameLoopObject {
                 if (pawnType === GamePawnType.shadow)
                     this._phaserScene.input.setDefaultCursor("pointer");
 
-                const img = this.getNewImage(targetSquere.wordPosition, pawnType).setInteractive();
-                targetSquere.addPawn(pawnType, img);
+                const img = this.getNewImage(targetSquere.wordPosition, pawnType).setInteractive().setAlpha(.5);
+                targetSquere.addEffect(new Pawn(pawnType, img))
             }
         });
 
@@ -89,19 +89,16 @@ export class GameBoard implements IGameLoopObject {
             };
 
             const topTarget = target[0];
-            // console.log(target.length);
 
             const { x, y } = topTarget;
             const targetSquere = this.getGameSquereByCoords({ x, y });
 
             if (!this._gameMaster.selectedSquere || (this._gameMaster.selectedSquere && !this._gameMaster.isSelectedPawnEqual(targetSquere))) {
-                targetSquere.unHighlight();
+                targetSquere.pawn?.unHighlight();
                 this._phaserScene.input.setDefaultCursor("");
             }
 
-            if (this._gameMaster.canRemoveSuggestPawn(targetSquere)) {
-                targetSquere.removePawn();
-            }
+            targetSquere.removeEffects();
         });
     }
 
@@ -173,39 +170,12 @@ export class GameBoard implements IGameLoopObject {
                     const img = this.getNewImage(gameSquere.wordPosition, pawnType);
                     img.setInteractive();
 
-                    gameSquere.addPawn(pawnType, img);
+                    gameSquere.addPawn(new Pawn(pawnType, img));
                 }
             }
         }
     }
 
-
-    // pawns
-
-    // private setSelectedPawn(pawn: GameSquere) {
-    //     this._selectedSquere = pawn;
-    //     this._selectedSquere.select();
-    //     this._boardSats.updateStats();
-    // }
-
-    // private clearSelectedPawn() {
-    //     this._selectedSquere?.unselect();
-    //     this._selectedSquere = null;
-    //     this._boardSats.updateStats();
-    // }
-
-    // private selectPawn(target: GameSquere) {
-    //     if (this._selectedSquere) {
-    //         const isTheSame = this._selectedSquere?.name === target.name;
-    //         this.clearSelectedPawn();
-
-    //         if (!isTheSame)
-    //             this.setSelectedPawn(target);
-    //     }
-    //     else {
-    //         this.setSelectedPawn(target);
-    //     }
-    // }
 
     private selectPawn(target: GameSquere) {
         if (this._gameMaster.selectedSquere) {
@@ -228,7 +198,7 @@ export class GameBoard implements IGameLoopObject {
         this._gameMaster.selectedSquere.removePawn();
 
         const img = this.getNewImage(target.wordPosition, pawnType)
-        target.addPawn(pawnType, img);
+        target.addPawn(new Pawn(pawnType, img));
 
         this._turnManager.finishTurn();
 
