@@ -6,11 +6,12 @@ export const GameBoardConst = {
   numCols: 8,
 
   playerPawns: [GamePawnType.black, GamePawnType.white],
+  suggestionPawns: [GamePawnType.shadow, GamePawnType.notAllowed],
   boardField: ["white_squere", "black_squere"],
 
-  blackStartingRows: [0, 1],
+  blackStartingRows: [0, 1, 2],
   get whiteStartingRows() {
-    return [this.numRows - 1, this.numRows - 2]
+    return [this.numRows - 1, this.numRows - 2, this.numRows - 3]
   },
 
   boardOffset: 50,

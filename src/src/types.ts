@@ -1,6 +1,8 @@
 
 // export declare type GamePawnType = "white" | "black" | "shadow" | "not_allowed" | null;
 
+import phaser from "phaser";
+
 export type ImageType = BoardSquereType | GamePawnType;
 
 export enum BoardSquereType {
@@ -45,4 +47,15 @@ export const ImageSpritesMap: ImageSpritesMapType = {
 export interface Point {
     x: number;
     y: number;
+}
+
+
+export interface IPhaserScene {
+    add: phaser.GameObjects.GameObjectFactory;
+    input: phaser.Input.InputPlugin;
+}
+
+export interface IGameLoopObject {
+    create(): void;
+    update(time: number, delta: number): void;
 }

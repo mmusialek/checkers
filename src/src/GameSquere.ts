@@ -1,18 +1,25 @@
 import { getBoardPos } from "./GameUtils";
-import { GamePawnType, Point } from "./types";
+import { BoardSquereType, GamePawnType, Point } from "./types";
 import * as phaser from "phaser";
 
 export class GameSquere {
     private _image: phaser.GameObjects.Image | null | undefined;
+    private _suggestionImage: phaser.GameObjects.Image | null | undefined;
 
     private readonly _wordPoint: Point;
     private _point: Point;
 
     private _pawnType: GamePawnType = GamePawnType.none;
+    private _boardSquereType: BoardSquereType;
 
     constructor(row: number, col: number) {
         this._point = { x: col, y: row };
+        this._boardSquereType = (this._point.x + this._point.y) % 2 === 0 ? BoardSquereType.whiteSquere : BoardSquereType.blackSquere
         this._wordPoint = getBoardPos(col, row);
+    }
+
+    get boardSquereType() {
+        return this._boardSquereType;
     }
 
     get name(): string {
@@ -36,26 +43,20 @@ export class GameSquere {
     }
 
     addPawn(type: GamePawnType, image: phaser.GameObjects.Image) {
-        this.setPawnType(type);
-        this.setImage(image);
-    }
-
-    changePawn(type: GamePawnType, image: phaser.GameObjects.Image) {
         this.removePawn();
         this.setPawnType(type);
         this.setImage(image);
     }
 
     removePawn() {
-        this.setPawnType(GamePawnType.none);
         this.clearImage();
     }
 
-    select() {
+    highlight() {
         this.image?.setAlpha(0.7);
     }
 
-    unselect() {
+    unHighlight() {
         this.image?.setAlpha(1);
     }
 
@@ -68,7 +69,50 @@ export class GameSquere {
     }
 
     private clearImage() {
-        this._image?.destroy(true);
+        this.setPawnType(GamePawnType.none);
+        this._image?.destroy();
         this._image = null;
     }
+}
+
+
+export class Pawn {
+    private _image: phaser.GameObjects.Image | null | undefined;
+
+    private _pawnType: GamePawnType = GamePawnType.none;
+
+    constructor(type: GamePawnType, image: phaser.GameObjects.Image) {
+        this._pawnType = type;
+        this._image = image;
+    }
+
+    get pawnType(): GamePawnType {
+        return this._pawnType;
+    }
+
+    get image() {
+        return this._image;
+    }
+
+    removePawn() {
+        this.clearImage();
+    }
+
+    highlight() {
+        this.image?.setAlpha(0.7);
+    }
+
+    unHighlight() {
+        this.image?.setAlpha(1);
+    }
+    private clearImage() {
+        this.setPawnType(GamePawnType.none);
+        this._image?.destroy();
+        this._image = null;
+    }
+
+    private setPawnType(type: GamePawnType) {
+        this._pawnType = type;
+    }
+
 }
