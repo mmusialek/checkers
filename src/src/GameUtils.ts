@@ -33,12 +33,43 @@ export const getNewText = (phaseAdd: phaser.GameObjects.GameObjectFactory, point
 }
 
 
-
-export const getDirection = (pointA: Point, pointB: Point): Point => {
+export const getDistance = (pointA: Point, pointB: Point): Point => {
     return { x: pointA.x - pointB.x, y: pointA.y - pointB.y }
 }
 
+export const getDirection = (pointA: Point, pointB: Point): Point => {
+    return {
+        x: Math.sign(pointB.x - pointA.x),
+        y: Math.sign(pointB.y - pointA.y)
+    };
+}
 
-export const addToPoint = (point: Point, value: number): Point => {
-    return { x: point.x + value, y: point.y - value }
+
+export const getOppositeDirection = (pointA: Point, pointB: Point): Point => {
+    return {
+        x: Math.sign(pointA.x - pointB.x),
+        y: Math.sign(pointA.y - pointB.y)
+    };
+}
+
+export const getOppositeDirection4Point = (direction: Point): Point => {
+    return {
+        x: -direction.x,
+        y: -direction.y
+    };
+}
+
+export const addValueToPoint = (point: Point, value: number): Point => {
+    return { x: point.x + value, y: point.y + value }
+}
+
+export const addPointToPoint = (point: Point, value: Point): Point => {
+    return { x: point.x + value.x, y: point.y + value.y }
+}
+
+export const checkRange = (point: Point, range: Point): boolean => {
+    return Math.abs(point.x) === range.x && Math.abs(point.y) === range.y;
+}
+export const checkRange4Value = (point: Point, range: number): boolean => {
+    return Math.abs(point.x) === range && Math.abs(point.y) === range;
 }

@@ -13,14 +13,14 @@ export class GameBoard implements IGameLoopObject {
 
     private readonly _turnManager: TurnManager;
     private readonly _gameMaster: GameMaster;
-    private readonly _boardSats: BoardStats;
+    private readonly _boardStats: BoardStats;
 
     constructor(phaserScene: IPhaserScene) {
         this._phaserScene = phaserScene;
         this.initializeBoard();
 
         this._turnManager = new TurnManager();
-        this._boardSats = new BoardStats(phaserScene, this._turnManager);
+        this._boardStats = new BoardStats(phaserScene, this._turnManager);
         this._gameMaster = new GameMaster(this._gameBoard, this._turnManager);
     }
 
@@ -29,7 +29,7 @@ export class GameBoard implements IGameLoopObject {
     create(): void {
         this.drawBoard();
         this.drawPawns();
-        this._boardSats.create();
+        this._boardStats.create();
 
         window.addEventListener('resize', () => {
             this.drawBoard();
@@ -76,11 +76,11 @@ export class GameBoard implements IGameLoopObject {
             else if (this._gameMaster.canSuggestPawn(targetSquere)) {
                 const pawnType = this._gameMaster.getPawnSuggestion(targetSquere);
 
-                if (pawnType === GamePawnType.shadow)
+                if (pawnType.effect === GamePawnType.shadow)
                     this._phaserScene.input.setDefaultCursor("pointer");
 
-                const img = this.getNewImage(targetSquere.wordPosition, pawnType).setInteractive().setAlpha(.5);
-                targetSquere.addEffect(new Pawn(pawnType, img))
+                const img = this.getNewImage(targetSquere.wordPosition, pawnType.effect).setInteractive().setAlpha(.5);
+                targetSquere.addEffect(new Pawn(pawnType.effect, img))
             }
         });
 
@@ -201,10 +201,12 @@ export class GameBoard implements IGameLoopObject {
         const img = this.getNewImage(target.wordPosition, pawnType)
         target.addPawn(new Pawn(pawnType, img));
 
-        this._turnManager.finishTurn();
 
-        this._gameMaster.clearSelectedPawn();
-        this._boardSats.updateStats();
+        // add points, remove enemy
+        this._gameMaster.processMovement(target);
+        // this._gameMaster.clearSelectedPawn();
+        this._boardStats.updateStats();
+        // this._turnManager.finishTurn();
     }
 
 
