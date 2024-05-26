@@ -18,6 +18,14 @@ export enum GamePawnType {
     notAllowed = "notAllowed",
 }
 
+export enum MovementType {
+    None = "None",
+    Normal = "Normal",
+    CaptureOnEnemy = "CaptureOnEnemy",
+    CaptureAfterEnemy = "CaptureAfterEnemy",
+    Unavailable = "Unavailable",
+}
+
 export type PawnSpritesMapType = {
     [key in GamePawnType]: string;
 }

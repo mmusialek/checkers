@@ -44,7 +44,6 @@ export const getDirection = (pointA: Point, pointB: Point): Point => {
     };
 }
 
-
 export const getOppositeDirection = (pointA: Point, pointB: Point): Point => {
     return {
         x: Math.sign(pointA.x - pointB.x),
@@ -65,6 +64,21 @@ export const addValueToPoint = (point: Point, value: number): Point => {
 
 export const addPointToPoint = (point: Point, value: Point): Point => {
     return { x: point.x + value.x, y: point.y + value.y }
+}
+
+export const addValueToArray = (arr: number[], value: number): number[] => {
+    const res = [...arr];
+    for (let i = 0; i < res.length; i++) {
+        res[i] += (Math.sign(res[i]) * value);
+    }
+    return res;
+}
+
+export const addValueToValue = (value1: number, valueToAdd: number): number => {
+    let res = value1;
+    res += (Math.sign(res) * valueToAdd);
+
+    return res;
 }
 
 export const checkRange = (point: Point, range: Point): boolean => {

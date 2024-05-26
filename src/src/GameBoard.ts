@@ -46,7 +46,7 @@ export class GameBoard implements IGameLoopObject {
             const { x, y } = topTarget;
             const targetSquere = this.getGameSquereByCoords({ x, y });
 
-            if (this._gameMaster.canSelectPawn(targetSquere)) {
+            if (this._gameMaster.canSelectPawnNoMoveCheck(targetSquere)) {
                 this.selectPawn(targetSquere);
             } else if (this._gameMaster.canPlacePawn(targetSquere)) {
                 this.placePawn(targetSquere);
@@ -61,7 +61,6 @@ export class GameBoard implements IGameLoopObject {
             const topTarget = target[0];
             const { x, y } = topTarget;
             const targetSquere = this.getGameSquereByCoords({ x, y });
-            // const { x: posX, y: posY } = targetSquere.position;
 
             if (!targetSquere) {
                 console.log("on pointerover: gameSquere not found!")
@@ -69,17 +68,15 @@ export class GameBoard implements IGameLoopObject {
             }
 
             // show pointer
-            if (this._gameMaster.canSelectPawn(targetSquere)) {
+            if (this._gameMaster.canSelectPawnNoMoveCheck(targetSquere)) {
                 this._phaserScene.input.setDefaultCursor("pointer");
                 targetSquere.pawn?.highlight();
             }
             else if (this._gameMaster.canSuggestPawn(targetSquere)) {
-                const pawnType = this._gameMaster.getPawnSuggestion(targetSquere);
+                const pawnType = this._gameMaster.getSuggestion4Field(targetSquere)!;
+                this._phaserScene.input.setDefaultCursor("pointer");
 
-                if (pawnType.effect === GamePawnType.shadow)
-                    this._phaserScene.input.setDefaultCursor("pointer");
-
-                const img = this.getNewImage(targetSquere.wordPosition, pawnType.effect).setInteractive().setAlpha(.5);
+                const img = this.getNewImage(targetSquere.wordPosition, pawnType.effect).setAlpha(.5);
                 targetSquere.addEffect(new Pawn(pawnType.effect, img))
             }
         });
@@ -182,6 +179,7 @@ export class GameBoard implements IGameLoopObject {
         if (this._gameMaster.selectedSquere) {
             const isTheSame = this._gameMaster.isSelectedPawnEqual(target);
             this._gameMaster.clearSelectedPawn();
+            this._gameMaster.clearSuggestions();
 
             if (!isTheSame)
                 this._gameMaster.setSelectedPawn(target);
@@ -204,9 +202,19 @@ export class GameBoard implements IGameLoopObject {
 
         // add points, remove enemy
         this._gameMaster.processMovement(target);
-        // this._gameMaster.clearSelectedPawn();
+
+        this._gameMaster.clearSuggestions();
+
+        if (this._gameMaster.checkAnyMovementLeft(target)) {
+            this.selectPawn(target);
+        } else {
+            this._turnManager.finishTurn();
+            this._gameMaster.clearSelectedPawn();
+        }
+
         this._boardStats.updateStats();
-        // this._turnManager.finishTurn();
+        const { black, white } = this._gameMaster.getBoard();
+        this._boardStats.updateScore(black, white);
     }
 
 
