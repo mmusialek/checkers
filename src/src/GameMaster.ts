@@ -137,7 +137,7 @@ export class GameMaster {
         this._selectedSquere = currentSquere;
         const lastSuggestion = this.getLastPlayerMovement();
 
-        if (lastSuggestion?.moveType === MovementType.Normal) {
+        if (!lastSuggestion || lastSuggestion?.moveType === MovementType.Normal) {
             return false;
         }
 
