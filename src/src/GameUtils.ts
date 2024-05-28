@@ -32,7 +32,6 @@ export const getNewText = (phaseAdd: phaser.GameObjects.GameObjectFactory, point
     return phaseAdd.text(x, y, text, newStyle).setOrigin(.5, .5);
 }
 
-
 export const getDistance = (pointA: Point, pointB: Point): Point => {
     return { x: pointA.x - pointB.x, y: pointA.y - pointB.y }
 }
@@ -51,34 +50,12 @@ export const getOppositeDirection = (pointA: Point, pointB: Point): Point => {
     };
 }
 
-export const getOppositeDirection4Point = (direction: Point): Point => {
-    return {
-        x: -direction.x,
-        y: -direction.y
-    };
-}
-
 export const addValueToPoint = (point: Point, value: number): Point => {
     return { x: point.x + value, y: point.y + value }
 }
 
 export const addPointToPoint = (point: Point, value: Point): Point => {
     return { x: point.x + value.x, y: point.y + value.y }
-}
-
-export const addValueToArray = (arr: number[], value: number): number[] => {
-    const res = [...arr];
-    for (let i = 0; i < res.length; i++) {
-        res[i] += (Math.sign(res[i]) * value);
-    }
-    return res;
-}
-
-export const addValueToValue = (value1: number, valueToAdd: number): number => {
-    let res = value1;
-    res += (Math.sign(res) * valueToAdd);
-
-    return res;
 }
 
 export const checkRange = (point: Point, range: Point): boolean => {

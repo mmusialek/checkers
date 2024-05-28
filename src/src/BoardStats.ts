@@ -1,5 +1,5 @@
 import phaser from "phaser";
-import { GamePawnType, IGameLoopObject, IPhaserScene, Point } from "./types";
+import { IGameLoopObject, IPhaserScene, Point } from "./types";
 import { GameBoardConst } from "./GameBoardConst";
 import { getBoardPos, getNewText } from "./GameUtils";
 import { TurnManager } from "./TurnManager";

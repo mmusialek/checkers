@@ -1,8 +1,8 @@
 import { GameSquere } from "./GameSquere";
 import { TurnManager } from "./TurnManager";
 import { GameBoardConst } from "./GameBoardConst";
-import { GamePawnType, MovementType, Point } from "./types";
-import { addPointToPoint, addValueToArray, addValueToValue, getDistance, getOppositeDirection } from "./GameUtils";
+import { GamePawnType, MovementType, Point, SuggestionData } from "./types";
+import { addPointToPoint, getOppositeDirection } from "./GameUtils";
 import { ScoreBoard } from "./ScoreBoard";
 
 export class GameMaster {
@@ -11,6 +11,8 @@ export class GameMaster {
     private readonly _scoreBoard: ScoreBoard;
     private _selectedSquere: GameSquere | null = null;
     private _suggestedFields: SuggestionData[] = [];
+
+    private _playerMovement: SuggestionData[] = [];
 
     constructor(gameBoard: GameSquere[][], turnManager: TurnManager) {
         this._scoreBoard = new ScoreBoard();
@@ -35,7 +37,6 @@ export class GameMaster {
     getSuggestion4Field(target: GameSquere) {
         const field = this._suggestedFields.find(q => q.gameSquere.position.x === target.position.x && q.gameSquere.position.y === target.position.y);
 
-        // if (field?.effect == GamePawnType.shadow) {
         if (field) {
             return field;
         }
@@ -53,18 +54,19 @@ export class GameMaster {
         return GameBoardConst.playerPawns.includes(target.pawnType) && this._turnManager.currentTurn === target.pawnType;
     }
 
-    canSelectGameSquere(prevSquere: GameSquere | null, target: GameSquere) {
-        if (this._turnManager.currentTurn === this._selectedSquere?.pawnType) {
+    canSelectGameSquere(startingSquere: GameSquere, targetSquere: GameSquere): MovementType {
+        if (this._turnManager.currentTurn !== this._selectedSquere?.pawnType)
+            return MovementType.Unavailable;
 
-            if (target.pawnType === GamePawnType.none && prevSquere?.pawnType === GamePawnType.black) {
-                return MovementType.CaptureAfterEnemy;
-            }
-            else if (target.pawnType === this._turnManager.opponentType && prevSquere === null) {
-                return MovementType.CaptureOnEnemy;
-            }
-            else if (target.pawnType === GamePawnType.none) {
-                return MovementType.Normal;
-            }
+
+        if (targetSquere.pawnType === GamePawnType.none && startingSquere?.pawnType === this._turnManager.opponentType) {
+            return MovementType.CaptureAfterEnemy;
+        }
+        else if (targetSquere.pawnType === this._turnManager.opponentType) {
+            return MovementType.CaptureOnEnemy;
+        }
+        else if (targetSquere.pawnType === GamePawnType.none) {
+            return MovementType.Normal;
         }
 
         return MovementType.Unavailable;
@@ -81,20 +83,32 @@ export class GameMaster {
 
     // action methods
 
+    moveSelectedPawn(target: GameSquere) {
+        this._selectedSquere!.movePawn(target);
+
+        const suggestion = this._suggestedFields.find(q => q.gameSquere.name === target.name);
+
+        if (!suggestion)
+            throw new Error("something went evidently in wrong way.")
+
+        this._playerMovement.push(suggestion);
+    }
+
     processMovement(target: GameSquere) {
-        const distance = getDistance(this.selectedSquere!.position, target.position);
-        if (Math.abs(distance.x) == 2 && Math.abs(distance.y) == 2) {
+        const suggestion = this.getLastPlayerMovement();
+
+        if (suggestion.moveType === MovementType.CaptureAfterEnemy) {
             const direction = getOppositeDirection(this.selectedSquere!.position, target.position);
             const prevPoint = addPointToPoint(target.position, direction);
             const prevGameSquere = this._gameBoard[prevPoint.y][prevPoint.x];
-            prevGameSquere.removePawn();
+            prevGameSquere.captureEnemyPawn();
             this._scoreBoard.incrementScore(this._turnManager.currentTurn);
         }
 
 
         // TODO check is next fights pending
 
-        // this.clearSelectedPawn();
+        this.clearSuggestions();
     }
 
     setSelectedPawn(pawn: GameSquere) {
@@ -109,16 +123,24 @@ export class GameMaster {
     clearSelectedPawn() {
         this._selectedSquere?.pawn?.unHighlight();
         this._selectedSquere = null;
+        this.clearSuggestions();
         // this._boardSats.updateStats();
     }
 
     clearSuggestions() {
         this._suggestedFields.splice(0, this._suggestedFields?.length);
+        this._playerMovement.splice(0, this._playerMovement?.length);
     }
 
 
     checkAnyMovementLeft(currentSquere: GameSquere): boolean {
         this._selectedSquere = currentSquere;
+        const lastSuggestion = this.getLastPlayerMovement();
+
+        if (lastSuggestion?.moveType === MovementType.Normal) {
+            return false;
+        }
+
         this.getPawnSuggestion();
         const canMove = this._suggestedFields.some(q => q.moveType === MovementType.CaptureAfterEnemy);
         if (!canMove) {
@@ -130,11 +152,25 @@ export class GameMaster {
 
     //helper methods
 
+    private getLastPlayerMovement() {
+        const lastSuggestion = this._playerMovement[this._playerMovement.length - 1];
+        return lastSuggestion;
+    }
+
     private getPawnSuggestion() {
         if (!this._selectedSquere) return;
 
-        const moveRange: number[] = [1, -1];
-        const suggestedFields = this.checkSquere(moveRange, null, 1)
+        const horizontalDirection: number[] = [1, -1];
+        const verticalDirection = (this._turnManager.currentTurn === GamePawnType.black ? [1] : [-1]);
+
+
+        const lastSuggestion = this.getLastPlayerMovement();
+
+        if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy) {
+            verticalDirection.push(verticalDirection[0] * -1);
+        }
+
+        const suggestedFields = this.checkSquere(this._selectedSquere, horizontalDirection, verticalDirection, 1)
 
         // capturing has priority, so check if any and disable other moves
         if (suggestedFields.some(q => q.moveType === MovementType.CaptureAfterEnemy)) {
@@ -147,58 +183,51 @@ export class GameMaster {
         this._suggestedFields = suggestedFields;
     }
 
-    private checkSquere(moveRange: number[], prevSquere: GameSquere | null, deep: number): SuggestionData[] {
-        const playerVerticalDirection = (this._turnManager.currentTurn === GamePawnType.black ? 1 : -1) * deep;
-
+    private checkSquere(startingSquere: GameSquere, horizontalMoveRange: number[], verticalMoveRange: number[], deep: number): SuggestionData[] {
         const availableMoves: SuggestionData[] = [];
+
         if (deep === 3)
             return availableMoves;
 
-        for (const horizontalMoveRangeItem of moveRange) {
-            const targetPosition: Point = addPointToPoint(this._selectedSquere!.position, { x: horizontalMoveRangeItem, y: playerVerticalDirection });
+        for (const vertivalMoveRangeItem of verticalMoveRange) {
+            for (const horizontalMoveRangeItem of horizontalMoveRange) {
+                const targetPosition: Point = addPointToPoint(startingSquere!.position, { x: horizontalMoveRangeItem, y: vertivalMoveRangeItem });
 
-            if (targetPosition.x < 0 || targetPosition.x > GameBoardConst.numCols - 1 || targetPosition.y < 0 || targetPosition.y > GameBoardConst.numRows - 1)
-                continue;
+                if (targetPosition.x < 0 || targetPosition.x > GameBoardConst.numCols - 1 || targetPosition.y < 0 || targetPosition.y > GameBoardConst.numRows - 1)
+                    continue;
 
-            const targetGameSquere = this._gameBoard[targetPosition.y][targetPosition.x];
-            const moveType = this.canSelectGameSquere(prevSquere, this._gameBoard[targetPosition.y][targetPosition.x]);
+                const targetGameSquere = this._gameBoard[targetPosition.y][targetPosition.x];
+                const moveType = this.canSelectGameSquere(startingSquere, targetGameSquere);
+                const nextDeep = deep + 1;
 
-            switch (moveType) {
-                case MovementType.Normal:
-                    availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType });
-                    break;
+                switch (moveType) {
+                    case MovementType.Normal:
+                        const lastSuggestion = this._playerMovement[this._playerMovement.length - 1]
+                        if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy)
+                            continue
+                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType });
+                        break;
 
-                case MovementType.CaptureOnEnemy: {
-                    availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType });
-                    const moveRangeDeep = addValueToArray([horizontalMoveRangeItem], 1);
-                    const res = this.checkSquere(moveRangeDeep, targetGameSquere, deep + 1);
+                    case MovementType.CaptureOnEnemy:
+                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType });
+                        const childRes = this.checkSquere(targetGameSquere, [horizontalMoveRangeItem], [vertivalMoveRangeItem], nextDeep);
+                        availableMoves.push(...childRes);
 
-                    availableMoves.push(...res);
+                        break;
+
+                    case MovementType.CaptureAfterEnemy:
+                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType });
+                        break;
+
+                    case MovementType.Unavailable:
+                    default:
+                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType });
+                        break;
                 }
-                    break;
-
-                case MovementType.CaptureAfterEnemy: {
-                    availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType });
-                    const moveRangeDeep = addValueToArray([horizontalMoveRangeItem], 1);
-                    const res = this.checkSquere(moveRangeDeep, targetGameSquere, deep + 1);
-
-                    availableMoves.push(...res);
-                }
-                    break;
-
-                case MovementType.Unavailable:
-                    availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType });
-                    break;
             }
         }
 
+
         return availableMoves;
     }
-}
-
-
-interface SuggestionData {
-    effect: GamePawnType;
-    moveType: MovementType;
-    gameSquere: GameSquere;
 }

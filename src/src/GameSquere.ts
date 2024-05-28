@@ -56,9 +56,18 @@ export class GameSquere {
         this._pawn = pawn;
     }
 
-    removePawn() {
+    captureEnemyPawn() {
         this._pawn?.removePawn();
         this._pawn = null;
+    }
+
+    movePawn(targetSquere: GameSquere) {
+        const tmp = this._pawn;
+        this._pawn = null;
+        this.removeEffects();
+
+        targetSquere.addPawn(tmp!);
+        targetSquere._pawn?.move(targetSquere.wordPosition);
     }
 
     get pawn() {
@@ -83,6 +92,10 @@ export class Pawn {
 
     get image() {
         return this._image;
+    }
+
+    move(point: Point) {
+        this.image?.setPosition(point.x, point.y);
     }
 
     removePawn() {

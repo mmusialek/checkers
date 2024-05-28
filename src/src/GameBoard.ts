@@ -41,8 +41,6 @@ export class GameBoard implements IGameLoopObject {
             if (!target || target.length === 0) return;
             const topTarget = target[0];
 
-            // this._gameMaster.onGameSquereClick(topTarget);
-
             const { x, y } = topTarget;
             const targetSquere = this.getGameSquereByCoords({ x, y });
 
@@ -162,7 +160,6 @@ export class GameBoard implements IGameLoopObject {
                 const blackPawn = GameBoardConst.blackStartingRows.includes(row);
                 const whitePawn = GameBoardConst.whiteStartingRows.includes(row);
 
-
                 if (gameSquere.boardSquereType === BoardSquereType.blackSquere && (blackPawn || whitePawn)) {
                     const pawnType = blackPawn ? GamePawnType.black : GamePawnType.white;
                     const img = this.getNewImage(gameSquere.wordPosition, pawnType);
@@ -193,17 +190,10 @@ export class GameBoard implements IGameLoopObject {
         if (!this._gameMaster.selectedSquere)
             return;
 
-        const { pawnType } = this._gameMaster.selectedSquere;
-        this._gameMaster.selectedSquere.removePawn();
-
-        const img = this.getNewImage(target.wordPosition, pawnType)
-        target.addPawn(new Pawn(pawnType, img));
-
+        this._gameMaster.moveSelectedPawn(target);
 
         // add points, remove enemy
         this._gameMaster.processMovement(target);
-
-        this._gameMaster.clearSuggestions();
 
         if (this._gameMaster.checkAnyMovementLeft(target)) {
             this.selectPawn(target);

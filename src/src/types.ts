@@ -2,6 +2,7 @@
 // export declare type GamePawnType = "white" | "black" | "shadow" | "not_allowed" | null;
 
 import phaser from "phaser";
+import { GameSquere } from "./GameSquere";
 
 export type ImageType = BoardSquereType | GamePawnType;
 
@@ -66,4 +67,12 @@ export interface IPhaserScene {
 export interface IGameLoopObject {
     create(): void;
     update(time: number, delta: number): void;
+}
+
+
+
+export interface SuggestionData {
+    effect: GamePawnType;
+    moveType: MovementType;
+    gameSquere: GameSquere;
 }
