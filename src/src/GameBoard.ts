@@ -37,7 +37,7 @@ export class GameBoard implements IGameLoopObject {
 
         //
 
-        this._phaserScene.input.on("pointerdown", (pointer: phaser.Input.Pointer, target: phaser.GameObjects.Image[]) => {
+        this._phaserScene.input.on("pointerdown", (_pointer: phaser.Input.Pointer, target: phaser.GameObjects.Image[]) => {
             if (!target || target.length === 0) return;
             const topTarget = target[0];
 
@@ -51,7 +51,7 @@ export class GameBoard implements IGameLoopObject {
             }
         });
 
-        this._phaserScene.input.on("pointerover", (pointer: phaser.Input.Pointer, target: phaser.GameObjects.Image[]) => {
+        this._phaserScene.input.on("pointerover", (_pointer: phaser.Input.Pointer, target: phaser.GameObjects.Image[]) => {
             if (!target || target.length === 0) {
                 return
             };
@@ -79,7 +79,7 @@ export class GameBoard implements IGameLoopObject {
             }
         });
 
-        this._phaserScene.input.on("pointerout", (pointer: phaser.Input.Pointer, target: any[]) => {
+        this._phaserScene.input.on("pointerout", (_pointer: phaser.Input.Pointer, target: any[]) => {
             if (!target || target.length === 0) {
                 return;
             };
@@ -98,7 +98,7 @@ export class GameBoard implements IGameLoopObject {
         });
     }
 
-    update(time: number, delta: number): void {
+    update(_time: number, _delta: number): void {
     }
 
     // helper methods

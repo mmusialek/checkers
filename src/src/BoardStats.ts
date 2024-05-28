@@ -21,7 +21,7 @@ export class BoardStats implements IGameLoopObject {
         this.initStats();
     }
 
-    update(time: number, delta: number): void {
+    update(_: number, _delta: number): void {
         throw new Error("Method not implemented.");
     }
 
