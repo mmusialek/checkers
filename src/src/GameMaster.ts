@@ -105,9 +105,6 @@ export class GameMaster {
             this._scoreBoard.incrementScore(this._turnManager.currentTurn);
         }
 
-
-        // TODO check is next fights pending
-
         this.clearSuggestions();
     }
 
@@ -129,6 +126,10 @@ export class GameMaster {
 
     clearSuggestions() {
         this._suggestedFields.splice(0, this._suggestedFields?.length);
+        // this._playerMovement.splice(0, this._playerMovement?.length);
+    }
+
+    clearPlayerMovement() {
         this._playerMovement.splice(0, this._playerMovement?.length);
     }
 
