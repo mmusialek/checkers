@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import "./style.css"
-import { GameBoardScene } from "./GameBoardScene";
+import { GameBoardScene } from "./scenes/GameBoardScene";
+import { MainMenuScene } from "./scenes/MainMenuScene";
+import { GameContext } from "./common/GameContex";
 
 
 class GameInitializer {
@@ -21,6 +23,8 @@ class GameInitializer {
       const config = this.getConfig();
       this.game = new Phaser.Game(config);
     }
+
+    GameContext.instance.init(this.game);
   }
 
   private getConfig() {
@@ -31,7 +35,7 @@ class GameInitializer {
       type: Phaser.AUTO,
       width: width,
       height: height,
-      scene: GameBoardScene,
+      scene: [MainMenuScene, GameBoardScene],
       autoCenter: Phaser.Scale.Center.CENTER_BOTH,
       canvasStyle: "margin:0; padding:0",
       autoFocus: true,

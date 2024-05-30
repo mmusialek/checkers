@@ -1,8 +1,9 @@
 import phaser from "phaser";
-import { IGameLoopObject, IPhaserScene, Point } from "./types";
+import { IGameLoopObject, IPhaserScene } from "./types";
 import { GameBoardConst } from "./GameBoardConst";
-import { getBoardPos, getNewText } from "./GameUtils";
+import { getBoardPos, getNewText } from "../GameUtils";
 import { TurnManager } from "./TurnManager";
+import { Point } from "../common/type";
 
 export class BoardStats implements IGameLoopObject {
     private readonly _phaserScene: IPhaserScene;

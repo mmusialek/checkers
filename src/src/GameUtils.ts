@@ -1,7 +1,8 @@
 import phaser from "phaser";
-import { GameBoardConst } from "./GameBoardConst";
-import { GameSquere } from "./GameSquere";
-import { ImageSpritesMap, ImageType, Point } from "./types";
+import { GameBoardConst } from "./board/GameBoardConst";
+import { GameSquere } from "./board/GameSquere";
+import { ImageSpritesMap, ImageType } from "./board/types";
+import { Point } from "./common/type";
 
 const offset = GameBoardConst.originOffset + GameBoardConst.boardOffset;
 

@@ -1,6 +1,3 @@
-
-// export declare type GamePawnType = "white" | "black" | "shadow" | "not_allowed" | null;
-
 import phaser from "phaser";
 import { GameSquere } from "./GameSquere";
 
@@ -52,12 +49,6 @@ export const ImageSpritesMap: ImageSpritesMapType = {
     [BoardSquereType.blackSquere]: "black_squere",
     [BoardSquereType.whiteSquere]: "white_squere",
 }
-
-export interface Point {
-    x: number;
-    y: number;
-}
-
 
 export interface IPhaserScene {
     add: phaser.GameObjects.GameObjectFactory;

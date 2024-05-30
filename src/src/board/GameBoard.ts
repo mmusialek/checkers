@@ -2,10 +2,11 @@ import phaser from "phaser";
 import { TurnManager } from "./TurnManager";
 import { GameSquere, Pawn } from "./GameSquere";
 import { GameBoardConst } from "./GameBoardConst";
-import { getBoardPos, getGameSquereByCoords, getNewImage, getNewText } from "./GameUtils";
-import { GamePawnType, BoardSquereType, Point, ImageType, IPhaserScene, IGameLoopObject } from "./types";
+import { getBoardPos, getGameSquereByCoords, getNewImage, getNewText } from "../GameUtils";
+import { GamePawnType, BoardSquereType, ImageType, IPhaserScene, IGameLoopObject } from "./types";
 import { GameMaster } from "./GameMaster";
 import { BoardStats } from "./BoardStats";
+import { Point } from "../common/type";
 
 export class GameBoard implements IGameLoopObject {
     private readonly _phaserScene: IPhaserScene;

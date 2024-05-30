@@ -1,9 +1,10 @@
 import { GameSquere } from "./GameSquere";
 import { TurnManager } from "./TurnManager";
 import { GameBoardConst } from "./GameBoardConst";
-import { GamePawnType, MovementType, Point, SuggestionData } from "./types";
-import { addPointToPoint, getOppositeDirection } from "./GameUtils";
+import { GamePawnType, MovementType, SuggestionData } from "./types";
+import { addPointToPoint, getOppositeDirection } from "../GameUtils";
 import { ScoreBoard } from "./ScoreBoard";
+import { Point } from "../common/type";
 
 export class GameMaster {
     private readonly _gameBoard: GameSquere[][];

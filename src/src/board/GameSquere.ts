@@ -1,5 +1,6 @@
-import { getBoardPos } from "./GameUtils";
-import { BoardSquereType, GamePawnType, Point } from "./types";
+import { getBoardPos } from "../GameUtils";
+import { BoardSquereType, GamePawnType } from "./types";
+import { Point } from "../common/type";
 import * as phaser from "phaser";
 
 export class GameSquere {
