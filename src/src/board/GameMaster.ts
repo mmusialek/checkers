@@ -37,6 +37,7 @@ export class GameMaster {
     clear() {
         this.clearSelectedPawn();
         this.clearPlayerMovement();
+        this.scoreboard.clear();
     }
 
     getBoard = () => {

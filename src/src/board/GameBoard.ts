@@ -6,7 +6,7 @@ import { getBoardPos, getGameSquereByCoords } from "../GameUtils";
 import { GamePawnType, BoardSquereType, IGameLoopObject, AllBoardImagesMap } from "./types";
 import { GameMaster } from "./GameMaster";
 import { BoardStats } from "./BoardStats";
-import { Point } from "../common/type";
+import { FunctionType, Point } from "../common/type";
 import { GameContext } from "../common/GameContex";
 import { createMenuButton, getNewImage, getNewText } from "../common/ObjectFatory";
 import { loadGame } from "../common/SaveGame";
@@ -23,8 +23,6 @@ export class GameBoard implements IGameLoopObject {
     private _loadGame: boolean = false;
 
     constructor() {
-        this.createGameBoard();
-
         this._turnManager = new TurnManager();
         this._boardStats = new BoardStats();
         this._gameMaster = new GameMaster(this._gameBoard, this._turnManager, this._boardStats);
@@ -38,7 +36,8 @@ export class GameBoard implements IGameLoopObject {
     }
 
     create(): void {
-        this.initializeBoard();
+        this._boardStats.create();
+        this.clear(this._loadGame ? this.loadDataHandler : null);
         this._loadGame = false;
 
         createMenuButton({ x: (8 * 64) + 100 + 30, y: 50 }, "Save", () => {
@@ -135,42 +134,37 @@ export class GameBoard implements IGameLoopObject {
 
     // helper methods
 
-    private clear() {
-        this.clearBoard();
+    private clear(dataHandler?: FunctionType | null) {
+        this.createGameBoard();
+        this.drawBoard();
+
         this._gameMaster.clear();
         this._turnManager.clear();
         this._boardStats.clear();
-    }
 
-    private clearBoard() {
-
-        for (let row = 0; row < GameBoardConst.numRows; row++) {
-            this._gameBoard[row].splice(0, GameBoardConst.numCols);
-        }
-        this.createGameBoard();
-        this.drawBoard();
-        this._boardStats.clear();
-        this.drawPawns();
-    }
-
-
-    private initializeBoard() {
-        this.drawBoard();
-        this._boardStats.create();
-
-        if (this._loadGame) {
-            const data = loadGame();
-            if (!data) {
-                //TODO handle this 
-            } else {
-                loadData(this._turnManager, this._gameMaster, this._boardStats, this._gameBoard, data);
-            }
+        if (dataHandler) {
+            dataHandler();
         } else {
             this.drawPawns();
         }
     }
 
+
+    private loadDataHandler = () => {
+        const data = loadGame();
+        if (!data) {
+            //TODO handle this 
+        } else {
+            loadData(this._turnManager, this._gameMaster, this._boardStats, this._gameBoard, data);
+        }
+    }
+
     private createGameBoard() {
+        if (this._gameBoard.length) {
+            for (let row = 0; row < GameBoardConst.numRows; row++) {
+                this._gameBoard[row].splice(0, GameBoardConst.numCols);
+            }
+        }
         for (let row = 0; row < GameBoardConst.numRows; row++) {
             this._gameBoard[row] = [];
             for (let col = 0; col < GameBoardConst.numCols; col++) {

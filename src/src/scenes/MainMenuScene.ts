@@ -30,7 +30,7 @@ export class MainMenuScene extends Phaser.Scene {
             startY += 60;
         }
         createMenuButton({ x: 100, y: startY }, "2 players", () => {
-            GameContext.instance.setScene(SceneConst.GameBoardScene);
+            GameContext.instance.setScene(SceneConst.GameBoardScene, {});
         });
     }
 }

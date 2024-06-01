@@ -11,6 +11,11 @@ export class ScoreBoard {
         }
     }
 
+    clear(): void {
+        this._score[GamePawnType.black] = 0;
+        this._score[GamePawnType.white] = 0;
+    }
+
     loadData(board: BoardType): void {
         this._score[GamePawnType.black] = board.black;
         this._score[GamePawnType.white] = board.white;
