@@ -12,16 +12,9 @@ export class BoardStats implements IGameLoopObject {
         this.initStats();
     }
 
-    private initStats() {
-        const statStyle = { fontFamily: GameBoardConst.fontFamily, color: "green" };
-        let { x: startX, y: startY } = getBoardPos(9, 0);
-
-        const turnText = "turn: " + GamePawnType.white;
-        this.turnImg = getNewText({ x: startX, y: startY }, turnText || "x", statStyle).setOrigin(0, 0);
-
-        const scoreText = "score: w: 0 / b: 0";
-        startY += this.turnImg.height;
-        this.scoreImg = getNewText({ x: startX, y: startY }, scoreText, statStyle).setOrigin(0, 0);
+    clear() {
+        this.updateTurn(GamePawnType.white);
+        this.updateScore({ black: 0, white: 0 });
     }
 
     updateTurn(pawnTurn: PlayerType) {
@@ -32,5 +25,19 @@ export class BoardStats implements IGameLoopObject {
     updateScore(board: BoardType) {
         const scoreText = `score: w: ${board.white} / b: ${board.black}`;
         this.scoreImg.setText(scoreText);
+    }
+
+    // helper methods
+
+    private initStats() {
+        const statStyle = { fontFamily: GameBoardConst.fontFamily, color: "green" };
+        let { x: startX, y: startY } = getBoardPos(9, 0);
+
+        const turnText = "turn: " + GamePawnType.white;
+        this.turnImg = getNewText({ x: startX, y: startY }, turnText || "x", statStyle).setOrigin(0, 0);
+
+        const scoreText = "score: w: 0 / b: 0";
+        startY += this.turnImg.height;
+        this.scoreImg = getNewText({ x: startX, y: startY }, scoreText, statStyle).setOrigin(0, 0);
     }
 }

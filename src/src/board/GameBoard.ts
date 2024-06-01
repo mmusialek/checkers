@@ -11,9 +11,10 @@ import { GameContext } from "../common/GameContex";
 import { createMenuButton, getNewImage, getNewText } from "../common/ObjectFatory";
 import { loadGame } from "../common/SaveGame";
 import { loadData, saveData } from "./GameBoardSaveManager";
+import { SceneConst } from "../common/SceneConst";
 
 export class GameBoard implements IGameLoopObject {
-    private _gameBoard: GameSquere[][] = [];
+    private readonly _gameBoard: GameSquere[][] = [];
 
     private readonly _turnManager: TurnManager;
     private readonly _gameMaster: GameMaster;
@@ -22,7 +23,7 @@ export class GameBoard implements IGameLoopObject {
     private _loadGame: boolean = false;
 
     constructor() {
-        this.initializeBoard();
+        this.createGameBoard();
 
         this._turnManager = new TurnManager();
         this._boardStats = new BoardStats();
@@ -37,22 +38,19 @@ export class GameBoard implements IGameLoopObject {
     }
 
     create(): void {
-        this.drawBoard();
-        this._boardStats.create();
+        this.initializeBoard();
+        this._loadGame = false;
 
-        if (this._loadGame) {
-            const data = loadGame();
-            if (!data) {
-                //TODO handle this 
-            } else {
-                loadData(this._turnManager, this._gameMaster, this._boardStats, this._gameBoard, data);
-            }
-        } else {
-            this.drawPawns();
-        }
-
-        createMenuButton({ x: (8 * 64) + 100 + 60, y: 50 }, "Save", () => {
+        createMenuButton({ x: (8 * 64) + 100 + 30, y: 50 }, "Save", () => {
             saveData(this._turnManager, this._gameMaster, this._gameBoard);
+        });
+
+        createMenuButton({ x: (8 * 64) + 100 + 30 + 120 + 5, y: 50 }, "New", () => {
+            this.clear();
+        });
+
+        createMenuButton({ x: (8 * 64) + 100 + 30 + 120 + 120 + 5 + 5, y: 50 }, "Back", () => {
+            GameContext.instance.setScene(SceneConst.MainMenuScene);
         });
 
         //
@@ -133,14 +131,46 @@ export class GameBoard implements IGameLoopObject {
         });
     }
 
+    // public methods
+
     // helper methods
 
-    private isBoardItem(key: string) {
-        return !AllBoardImagesMap.includes(key);
+    private clear() {
+        this.clearBoard();
+        this._gameMaster.clear();
+        this._turnManager.clear();
+        this._boardStats.clear();
     }
 
+    private clearBoard() {
+
+        for (let row = 0; row < GameBoardConst.numRows; row++) {
+            this._gameBoard[row].splice(0, GameBoardConst.numCols);
+        }
+        this.createGameBoard();
+        this.drawBoard();
+        this._boardStats.clear();
+        this.drawPawns();
+    }
+
+
     private initializeBoard() {
-        this._gameBoard = [];
+        this.drawBoard();
+        this._boardStats.create();
+
+        if (this._loadGame) {
+            const data = loadGame();
+            if (!data) {
+                //TODO handle this 
+            } else {
+                loadData(this._turnManager, this._gameMaster, this._boardStats, this._gameBoard, data);
+            }
+        } else {
+            this.drawPawns();
+        }
+    }
+
+    private createGameBoard() {
         for (let row = 0; row < GameBoardConst.numRows; row++) {
             this._gameBoard[row] = [];
             for (let col = 0; col < GameBoardConst.numCols; col++) {
@@ -150,7 +180,6 @@ export class GameBoard implements IGameLoopObject {
             }
         }
     }
-
 
     private drawBoard() {
         const boardCellPosStyle = { fontFamily: GameBoardConst.fontFamily, color: "green" };
@@ -206,6 +235,15 @@ export class GameBoard implements IGameLoopObject {
             }
         }
     }
+
+
+    private isBoardItem(key: string) {
+        return !AllBoardImagesMap.includes(key);
+    }
+
+    //
+    // pawn actions
+    //
 
     private selectPawn(target: GameSquere) {
         if (this._gameMaster.selectedSquere) {
