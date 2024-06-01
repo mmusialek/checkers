@@ -23,7 +23,11 @@ export class GameSquere {
     }
 
     get name(): string {
-        return `${this._point.x}-${this._point.y}`;
+        const letter = String.fromCharCode(65 + this.position.x);
+        const digit = 8 - this.position.y;
+        const tmp = `${letter}${digit}`;
+        const pos = `${tmp}\n${this._point.x}-${this._point.y}`;
+        return pos;
     }
 
     get pawnType(): GamePawnType {

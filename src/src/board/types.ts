@@ -74,3 +74,4 @@ export interface SuggestionData {
 // board type, player type 
 export declare type PlayerType = GamePawnType.white | GamePawnType.black;
 export declare type BoardType = { [key in PlayerType]: number };
+

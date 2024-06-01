@@ -183,7 +183,7 @@ export class GameBoard implements IGameLoopObject {
         for (let i = 0; i < GameBoardConst.numCols; i++) {
             const y = (i * GameBoardConst.tileSize) + numbersOffsetY;
 
-            const text = (i + 1).toFixed();
+            const text = (GameBoardConst.numCols - i).toFixed();
             getNewText({ x: verticalNamesX, y }, text || "x", extBoardCellNameStyle);
         }
     }

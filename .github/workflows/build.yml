@@ -27,6 +27,10 @@ jobs:
       - name: Install dependencies
         working-directory: src
         run: pnpm install
+      
+      - name: Run lint
+        working-directory: src
+        run: pnpm lint
 
       - name: Build Vite app
         working-directory: src
