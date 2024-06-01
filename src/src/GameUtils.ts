@@ -1,7 +1,5 @@
-import phaser from "phaser";
 import { GameBoardConst } from "./board/GameBoardConst";
 import { GameSquere } from "./board/GameSquere";
-import { ImageSpritesMap, ImageType } from "./board/types";
 import { Point } from "./common/type";
 
 const offset = GameBoardConst.originOffset + GameBoardConst.boardOffset;
@@ -18,19 +16,6 @@ export const getGameSquereByCoords = (gameBoard: GameSquere[][], point: Point): 
     const { x, y } = getArrayPos(point.x, point.y);
     const gameSquere = gameBoard[y][x];
     return gameSquere;
-}
-
-export const getNewImage = (phaseAdd: phaser.GameObjects.GameObjectFactory, point: Point, type: ImageType) => {
-    const { x, y } = point
-    return phaseAdd.image(x, y, ImageSpritesMap[type]).setName(type);
-}
-
-export const getNewText = (phaseAdd: phaser.GameObjects.GameObjectFactory, point: Point, text: string, style?: phaser.Types.GameObjects.Text.TextStyle) => {
-    const { x, y } = point
-
-    const defaultStyles = { fontFamily: GameBoardConst.fontFamily, color: "red", fontSize: 17, fontStyle: "300" };
-    const newStyle = style ? { ...defaultStyles, ...style } : defaultStyles;
-    return phaseAdd.text(x, y, text, newStyle).setOrigin(.5, .5);
 }
 
 export const getDistance = (pointA: Point, pointB: Point): Point => {

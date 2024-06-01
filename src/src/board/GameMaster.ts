@@ -5,20 +5,23 @@ import { GamePawnType, MovementType, SuggestionData } from "./types";
 import { addPointToPoint, getOppositeDirection } from "../GameUtils";
 import { ScoreBoard } from "./ScoreBoard";
 import { Point } from "../common/type";
+import { BoardStats } from "./BoardStats";
 
 export class GameMaster {
     private readonly _gameBoard: GameSquere[][];
     private readonly _turnManager: TurnManager;
     private readonly _scoreBoard: ScoreBoard;
+    private readonly _boardStats: BoardStats;
     private _selectedSquere: GameSquere | null = null;
     private _suggestedFields: SuggestionData[] = [];
 
     private _playerMovement: SuggestionData[] = [];
 
-    constructor(gameBoard: GameSquere[][], turnManager: TurnManager) {
-        this._scoreBoard = new ScoreBoard();
+    constructor(gameBoard: GameSquere[][], turnManager: TurnManager, boardStats: BoardStats) {
         this._gameBoard = gameBoard;
+        this._scoreBoard = new ScoreBoard();
         this._turnManager = turnManager;
+        this._boardStats = boardStats;
     }
 
     get selectedSquere(): GameSquere | null {
@@ -112,7 +115,7 @@ export class GameMaster {
     setSelectedPawn(pawn: GameSquere) {
         this._selectedSquere = pawn;
         this._selectedSquere.pawn?.highlight();
-        // this._boardSats.updateStats();
+        this._boardStats.updateTurn(this._turnManager.currentTurn);
 
         this.getPawnSuggestion();
     }
@@ -122,12 +125,11 @@ export class GameMaster {
         this._selectedSquere?.pawn?.unHighlight();
         this._selectedSquere = null;
         this.clearSuggestions();
-        // this._boardSats.updateStats();
+        this._boardStats.updateTurn(this._turnManager.currentTurn);
     }
 
     clearSuggestions() {
         this._suggestedFields.splice(0, this._suggestedFields?.length);
-        // this._playerMovement.splice(0, this._playerMovement?.length);
     }
 
     clearPlayerMovement() {

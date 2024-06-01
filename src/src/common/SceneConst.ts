@@ -1,4 +1,4 @@
-export const SceneConst = {
-    MainMenuScene: "MainMenuScene",
-    GameBoardScene: "GameBoardScene"
+export enum SceneConst {
+    MainMenuScene = "MainMenuScene",
+    GameBoardScene = "GameBoardScene"
 }

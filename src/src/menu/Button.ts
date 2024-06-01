@@ -1,5 +1,6 @@
 import phaser from "phaser";
-import { IGameLoopObject, IPhaserScene } from "../board/types";
+import { IGameLoopObject } from "../board/types";
+import { GameContext } from "../common/GameContex";
 
 interface ButtonProps {
     textImg: phaser.GameObjects.Text;
@@ -11,14 +12,9 @@ interface ButtonProps {
 }
 
 export class Button implements IGameLoopObject {
-    private readonly _phaserScene: IPhaserScene;
     private textImg!: phaser.GameObjects.Text;
     private bgImg!: phaser.GameObjects.Image;
     private bgHoverImg!: phaser.GameObjects.Image;
-
-    constructor(phaserScene: IPhaserScene) {
-        this._phaserScene = phaserScene;
-    }
 
     private isHover: boolean = false;
 
@@ -35,13 +31,15 @@ export class Button implements IGameLoopObject {
             buttonData.onClick();
         });
 
+        const currentScene = GameContext.instance.currentScene;
+
         this.bgImg.on("pointerover", (_pointer: phaser.Input.Pointer, _target: phaser.GameObjects.Image[]) => {
-            this._phaserScene.input.setDefaultCursor("pointer");
+            currentScene.input.setDefaultCursor("pointer");
             this.toggleHover();
         });
 
         this.bgHoverImg.on("pointerout", (_pointer: phaser.Input.Pointer, _target: phaser.GameObjects.Image[]) => {
-            this._phaserScene.input.setDefaultCursor("");
+            currentScene.input.setDefaultCursor("");
             this.toggleHover();
         });
     }

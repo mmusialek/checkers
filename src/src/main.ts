@@ -37,12 +37,12 @@ class GameInitializer {
       height: height,
       scene: [MainMenuScene, GameBoardScene],
       autoCenter: Phaser.Scale.Center.CENTER_BOTH,
-      canvasStyle: "margin:0; padding:0",
+      canvasStyle: "margin: 0; padding: 0",
       autoFocus: true,
       scale: {
-        autoCenter: Phaser.Scale.Center.CENTER_BOTH,
+        autoCenter: Phaser.Scale.Center.NO_CENTER,
         width: '100%',
-        height: '100%'
+        height: '100%',
       }
     };
     return config;

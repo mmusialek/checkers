@@ -7,7 +7,13 @@ export class GameBoardScene extends Phaser.Scene {
 
     constructor() {
         super(SceneConst.GameBoardScene);
-        this._gameBoard = new GameBoard(this);
+        this._gameBoard = new GameBoard();
+    }
+
+    init(data?: object) {
+        if (data) {
+            this._gameBoard.init?.(data);
+        }
     }
 
     preload(): void {
@@ -18,13 +24,16 @@ export class GameBoardScene extends Phaser.Scene {
 
         this.load.image('black_squere', 'assets/board/black_squere.png');
         this.load.image('white_squere', 'assets/board/white_squere.png');
+
+        this.load.image('menu_button_hover', 'assets/menu/button_bg_hover.png');
+        this.load.image('menu_button', 'assets/menu/button_bg.png');
     }
 
     create(): void {
-        this._gameBoard.create();
+        this._gameBoard.create?.();
     }
 
     update(time: number, delta: number): void {
-        this._gameBoard.update(time, delta);
+        this._gameBoard.update?.(time, delta);
     }
 }

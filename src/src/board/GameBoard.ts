@@ -2,45 +2,70 @@ import phaser from "phaser";
 import { TurnManager } from "./TurnManager";
 import { GameSquere, Pawn } from "./GameSquere";
 import { GameBoardConst } from "./GameBoardConst";
-import { getBoardPos, getGameSquereByCoords, getNewImage, getNewText } from "../GameUtils";
-import { GamePawnType, BoardSquereType, ImageType, IPhaserScene, IGameLoopObject } from "./types";
+import { getBoardPos, getGameSquereByCoords } from "../GameUtils";
+import { GamePawnType, BoardSquereType, IGameLoopObject, AllBoardImagesMap } from "./types";
 import { GameMaster } from "./GameMaster";
 import { BoardStats } from "./BoardStats";
 import { Point } from "../common/type";
+import { GameContext } from "../common/GameContex";
+import { createMenuButton, getNewImage, getNewText } from "../common/ObjectFatory";
+import { loadGame } from "../common/SaveGame";
+import { loadData, saveData } from "./GameBoardSaveManager";
 
 export class GameBoard implements IGameLoopObject {
-    private readonly _phaserScene: IPhaserScene;
     private _gameBoard: GameSquere[][] = [];
 
     private readonly _turnManager: TurnManager;
     private readonly _gameMaster: GameMaster;
     private readonly _boardStats: BoardStats;
 
-    constructor(phaserScene: IPhaserScene) {
-        this._phaserScene = phaserScene;
+    private _loadGame: boolean = false;
+
+    constructor() {
         this.initializeBoard();
 
         this._turnManager = new TurnManager();
-        this._boardStats = new BoardStats(phaserScene, this._turnManager);
-        this._gameMaster = new GameMaster(this._gameBoard, this._turnManager);
+        this._boardStats = new BoardStats();
+        this._gameMaster = new GameMaster(this._gameBoard, this._turnManager, this._boardStats);
     }
 
     // loop methods
 
+    init(data?: object): void {
+        if (data && Object.keys(data).length > 0)
+            this._loadGame = (data as any).loadGame;
+    }
+
     create(): void {
         this.drawBoard();
-        this.drawPawns();
         this._boardStats.create();
 
-        window.addEventListener('resize', () => {
-            this.drawBoard();
+        if (this._loadGame) {
+            const data = loadGame();
+            if (!data) {
+                //TODO handle this 
+            } else {
+                loadData(this._turnManager, this._gameMaster, this._boardStats, this._gameBoard, data);
+            }
+        } else {
+            this.drawPawns();
+        }
+
+        createMenuButton({ x: (8 * 64) + 100 + 60, y: 50 }, "Save", () => {
+            saveData(this._turnManager, this._gameMaster, this._gameBoard);
         });
 
         //
+        const currentScene = GameContext.instance.currentScene;
 
-        this._phaserScene.input.on("pointerdown", (_pointer: phaser.Input.Pointer, target: phaser.GameObjects.Image[]) => {
+
+        currentScene.input.on("pointerdown", (_pointer: phaser.Input.Pointer, target: phaser.GameObjects.Image[]) => {
             if (!target || target.length === 0) return;
             const topTarget = target[0];
+
+            if (this.isBoardItem(topTarget.texture.key)) {
+                return;
+            }
 
             const { x, y } = topTarget;
             const targetSquere = this.getGameSquereByCoords({ x, y });
@@ -52,12 +77,17 @@ export class GameBoard implements IGameLoopObject {
             }
         });
 
-        this._phaserScene.input.on("pointerover", (_pointer: phaser.Input.Pointer, target: phaser.GameObjects.Image[]) => {
+        currentScene.input.on("pointerover", (_pointer: phaser.Input.Pointer, target: phaser.GameObjects.Image[]) => {
             if (!target || target.length === 0) {
                 return
             };
 
             const topTarget = target[0];
+
+            if (this.isBoardItem(topTarget.texture.key)) {
+                return;
+            }
+
             const { x, y } = topTarget;
             const targetSquere = this.getGameSquereByCoords({ x, y });
 
@@ -68,41 +98,46 @@ export class GameBoard implements IGameLoopObject {
 
             // show pointer
             if (this._gameMaster.canSelectPawnNoMoveCheck(targetSquere)) {
-                this._phaserScene.input.setDefaultCursor("pointer");
+                currentScene.input.setDefaultCursor("pointer");
                 targetSquere.pawn?.highlight();
             }
             else if (this._gameMaster.canSuggestPawn(targetSquere)) {
                 const pawnType = this._gameMaster.getSuggestion4Field(targetSquere)!;
-                this._phaserScene.input.setDefaultCursor("pointer");
+                currentScene.input.setDefaultCursor("pointer");
 
-                const img = this.getNewImage(targetSquere.wordPosition, pawnType.effect).setAlpha(.5);
+                const img = getNewImage(targetSquere.wordPosition, pawnType.effect).setAlpha(.5);
                 targetSquere.addEffect(new Pawn(pawnType.effect, img))
             }
         });
 
-        this._phaserScene.input.on("pointerout", (_pointer: phaser.Input.Pointer, target: any[]) => {
+        currentScene.input.on("pointerout", (_pointer: phaser.Input.Pointer, target: any[]) => {
             if (!target || target.length === 0) {
                 return;
             };
 
             const topTarget = target[0];
 
+            if (this.isBoardItem(topTarget.texture.key)) {
+                return;
+            }
+
             const { x, y } = topTarget;
             const targetSquere = this.getGameSquereByCoords({ x, y });
 
             if (!this._gameMaster.selectedSquere || (this._gameMaster.selectedSquere && !this._gameMaster.isSelectedPawnEqual(targetSquere))) {
                 targetSquere.pawn?.unHighlight();
-                this._phaserScene.input.setDefaultCursor("");
+                currentScene.input.setDefaultCursor("");
             }
 
             targetSquere.removeEffects();
         });
     }
 
-    update(_time: number, _delta: number): void {
-    }
-
     // helper methods
+
+    private isBoardItem(key: string) {
+        return !AllBoardImagesMap.includes(key);
+    }
 
     private initializeBoard() {
         this._gameBoard = [];
@@ -118,29 +153,29 @@ export class GameBoard implements IGameLoopObject {
 
 
     private drawBoard() {
-        const boardCellPosStyle = { fontFamily: GameBoardConst.fontFamily, color: "magenta" };
+        const boardCellPosStyle = { fontFamily: GameBoardConst.fontFamily, color: "green" };
         for (let row = 0; row < GameBoardConst.numRows; row++) {
             for (let col = 0; col < GameBoardConst.numCols; col++) {
                 const { x, y } = getBoardPos(col, row);
 
                 const gs = this.getGameSquereByCoords({ x, y });
-                this.getNewImage({ x, y }, gs.boardSquereType).setInteractive();
+                getNewImage({ x, y }, gs.boardSquereType).setInteractive();
 
                 const text = gs.name;
-                this.getNewText({ x, y }, text || "x", boardCellPosStyle);
+                getNewText({ x, y }, text || "x", boardCellPosStyle);
             }
         }
 
         // draw board names
 
-        const extBoardCellNameStyle = { fontFamily: GameBoardConst.fontFamily, color: "red", fontSize: 17, fontStyle: "300" };
+        const extBoardCellNameStyle = { fontFamily: GameBoardConst.fontFamily, color: "green", fontSize: 17, fontStyle: "300" };
         const namesOffsetX = GameBoardConst.originOffset + GameBoardConst.boardOffset;
         const namesOffsetY = (GameBoardConst.tileSize * 8) + 20 + GameBoardConst.boardOffset;
         for (let i = 0; i < GameBoardConst.numRows; i++) {
             const x = (i * GameBoardConst.tileSize) + namesOffsetX;
 
             const text = String.fromCharCode(65 + i);
-            this.getNewText({ x, y: namesOffsetY }, text || "x", extBoardCellNameStyle);
+            getNewText({ x, y: namesOffsetY }, text || "x", extBoardCellNameStyle);
         }
 
         const verticalNamesX = GameBoardConst.boardOffset / 2;
@@ -149,7 +184,7 @@ export class GameBoard implements IGameLoopObject {
             const y = (i * GameBoardConst.tileSize) + numbersOffsetY;
 
             const text = (i + 1).toFixed();
-            this.getNewText({ x: verticalNamesX, y }, text || "x", extBoardCellNameStyle);
+            getNewText({ x: verticalNamesX, y }, text || "x", extBoardCellNameStyle);
         }
     }
 
@@ -163,7 +198,7 @@ export class GameBoard implements IGameLoopObject {
 
                 if (gameSquere.boardSquereType === BoardSquereType.blackSquere && (blackPawn || whitePawn)) {
                     const pawnType = blackPawn ? GamePawnType.black : GamePawnType.white;
-                    const img = this.getNewImage(gameSquere.wordPosition, pawnType);
+                    const img = getNewImage(gameSquere.wordPosition, pawnType);
                     img.setInteractive();
 
                     gameSquere.addPawn(new Pawn(pawnType, img));
@@ -171,7 +206,6 @@ export class GameBoard implements IGameLoopObject {
             }
         }
     }
-
 
     private selectPawn(target: GameSquere) {
         if (this._gameMaster.selectedSquere) {
@@ -202,9 +236,8 @@ export class GameBoard implements IGameLoopObject {
             this._gameMaster.clearPlayerMovement();
         }
 
-        this._boardStats.updateStats();
-        const { black, white } = this._gameMaster.getBoard();
-        this._boardStats.updateScore(black, white);
+        this._boardStats.updateTurn(this._turnManager.currentTurn);
+        this._boardStats.updateScore(this._gameMaster.getBoard());
     }
 
 
@@ -212,13 +245,5 @@ export class GameBoard implements IGameLoopObject {
 
     private getGameSquereByCoords(point: Point) {
         return getGameSquereByCoords(this._gameBoard, point);
-    }
-
-    private getNewImage(point: Point, type: ImageType) {
-        return getNewImage(this._phaserScene.add, point, type);
-    }
-
-    private getNewText(point: Point, text: string, style?: phaser.Types.GameObjects.Text.TextStyle) {
-        return getNewText(this._phaserScene.add, point, text, style);
     }
 }

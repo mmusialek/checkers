@@ -22,12 +22,10 @@ export class GameContext {
         return this._game.scene.getScene(this._currentSceneName);
     }
 
-    setScene(name: string) {
+    setScene(name: SceneConst, data?: object) {
         const tmp = this._currentSceneName;
         this._currentSceneName = name;
-        this._game.scene.start(name);
 
-        if (tmp)
-            this._game.scene.pause(tmp);
+        this._game.scene.stop(tmp).start(name, data);
     }
 }

@@ -50,14 +50,17 @@ export const ImageSpritesMap: ImageSpritesMapType = {
     [BoardSquereType.whiteSquere]: "white_squere",
 }
 
+export const AllBoardImagesMap = [...Object.values(ImageSpritesMap), ...Object.values(PawnSpritesMap)];
+
 export interface IPhaserScene {
     add: phaser.GameObjects.GameObjectFactory;
     input: phaser.Input.InputPlugin;
 }
 
 export interface IGameLoopObject {
-    create(): void;
-    update(time: number, delta: number): void;
+    init?: (data?: object) => void;
+    create?: () => void;
+    update?: (time: number, delta: number) => void;
 }
 
 
@@ -67,3 +70,7 @@ export interface SuggestionData {
     moveType: MovementType;
     gameSquere: GameSquere;
 }
+
+// board type, player type 
+export declare type PlayerType = GamePawnType.white | GamePawnType.black;
+export declare type BoardType = { [key in PlayerType]: number };

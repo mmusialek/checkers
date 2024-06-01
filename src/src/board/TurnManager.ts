@@ -1,7 +1,7 @@
-import { GamePawnType } from "./types";
+import { GamePawnType, PlayerType } from "./types";
 
 export class TurnManager {
-    private _pawnTurn: GamePawnType.white | GamePawnType.black;
+    private _pawnTurn: PlayerType;
 
     constructor() {
         this._pawnTurn = GamePawnType.white;
@@ -13,6 +13,10 @@ export class TurnManager {
 
     get opponentType() {
         return this._pawnTurn === GamePawnType.black ? GamePawnType.white : GamePawnType.black;
+    }
+
+    loadData(pawn: PlayerType) {
+        this._pawnTurn = pawn;
     }
 
     finishTurn() {
