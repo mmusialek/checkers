@@ -1,4 +1,4 @@
-import { BoardType, GamePawnType, PlayerType } from "./types";
+import { BoardType, PlayerType } from "./types";
 
 export class ScoreBoard {
     private readonly _score: BoardType = { black: 0, white: 0 };
@@ -12,13 +12,13 @@ export class ScoreBoard {
     }
 
     clear(): void {
-        this._score[GamePawnType.black] = 0;
-        this._score[GamePawnType.white] = 0;
+        this._score[PlayerType.black] = 0;
+        this._score[PlayerType.white] = 0;
     }
 
     loadData(board: BoardType): void {
-        this._score[GamePawnType.black] = board.black;
-        this._score[GamePawnType.white] = board.white;
+        this._score[PlayerType.black] = board[PlayerType.black];
+        this._score[PlayerType.white] = board[PlayerType.white];
     }
 
     getBoard(): BoardType {

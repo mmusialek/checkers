@@ -5,9 +5,8 @@ export const GameBoardConst = {
   numRows: 8,
   numCols: 8,
 
-  playerPawns: [GamePawnType.black, GamePawnType.white],
+  playerPawns: [GamePawnType.blackPawn, GamePawnType.whitePawn],
   suggestionPawns: [GamePawnType.shadow, GamePawnType.notAllowed],
-  boardField: ["white_squere", "black_squere"],
 
   blackStartingRows: [0, 1, 2],
   get whiteStartingRows() {

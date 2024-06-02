@@ -1,4 +1,4 @@
-import { GamePawnType } from "../board/types";
+import { GamePawnType, PlayerType } from "../board/types";
 import { SerializationHelper } from "./SerializtionHelper";
 import { Point } from "./type";
 
@@ -7,11 +7,12 @@ const saveGameKey = "save-game-key";
 export interface GameSquereSave {
     position: Point;
     pawn: GamePawnType;
+    player: PlayerType;
 }
 
 export interface GameSaveObject {
     board: GameSquereSave[];
-    currentTurn: GamePawnType.black | GamePawnType.white;
+    currentTurn: PlayerType;
     score: { white: number, black: number };
 }
 

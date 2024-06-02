@@ -3,7 +3,7 @@ import { TurnManager } from "./TurnManager";
 import { GameSquere, Pawn } from "./GameSquere";
 import { GameBoardConst } from "./GameBoardConst";
 import { getBoardPos, getGameSquereByCoords } from "../GameUtils";
-import { GamePawnType, BoardSquereType, IGameLoopObject, AllBoardImagesMap } from "./types";
+import { GamePawnType, BoardSquereType, IGameLoopObject, AllBoardImageValues, PlayerType } from "./types";
 import { GameMaster } from "./GameMaster";
 import { BoardStats } from "./BoardStats";
 import { FunctionType, Point } from "../common/type";
@@ -99,11 +99,11 @@ export class GameBoard implements IGameLoopObject {
                 targetSquere.pawn?.highlight();
             }
             else if (this._gameMaster.canSuggestPawn(targetSquere)) {
-                const pawnType = this._gameMaster.getSuggestion4Field(targetSquere)!;
+                const suggestedMove = this._gameMaster.getSuggestion4Field(targetSquere)!;
                 currentScene.input.setDefaultCursor("pointer");
 
-                const img = getNewImage(targetSquere.wordPosition, pawnType.effect).setAlpha(.5);
-                targetSquere.addEffect(new Pawn(pawnType.effect, img))
+                const img = getNewImage(targetSquere.wordPosition, suggestedMove.effect).setAlpha(.5);
+                targetSquere.addEffect(new Pawn(suggestedMove.player, suggestedMove.effect, img));
             }
         });
 
@@ -220,11 +220,12 @@ export class GameBoard implements IGameLoopObject {
                 const whitePawn = GameBoardConst.whiteStartingRows.includes(row);
 
                 if (gameSquere.boardSquereType === BoardSquereType.blackSquere && (blackPawn || whitePawn)) {
-                    const pawnType = blackPawn ? GamePawnType.black : GamePawnType.white;
+                    const pawnType = blackPawn ? GamePawnType.blackPawn : GamePawnType.whitePawn;
+                    const playerType = blackPawn ? PlayerType.black : PlayerType.white;
                     const img = getNewImage(gameSquere.wordPosition, pawnType);
                     img.setInteractive();
 
-                    gameSquere.addPawn(new Pawn(pawnType, img));
+                    gameSquere.addPawn(new Pawn(playerType, pawnType, img));
                 }
             }
         }
@@ -232,7 +233,7 @@ export class GameBoard implements IGameLoopObject {
 
 
     private isBoardItem(key: string) {
-        return !AllBoardImagesMap.includes(key);
+        return !AllBoardImageValues.includes(key);
     }
 
     //

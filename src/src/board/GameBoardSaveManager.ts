@@ -14,12 +14,12 @@ export const loadData = (turnManager: TurnManager, gameMaster: GameMaster, board
     turnManager.loadData(data.currentTurn);
 
     for (let i = 0; i < data.board.length; i++) {
-        const pawnType = data.board[i].pawn;
-        const { x, y } = data.board[i].position;
+        const { pawn, player, position } = data.board[i];
+        const { x, y } = position;
         const wordPos = getBoardPos(x, y);
-        const img = getNewImage(wordPos, pawnType);
+        const img = getNewImage(wordPos, pawn);
         img.setInteractive();
-        gameBoard[y][x].addPawn(new Pawn(pawnType, img));
+        gameBoard[y][x].addPawn(new Pawn(player, pawn, img));
     }
 
 
@@ -33,8 +33,8 @@ export const saveData = (turnManager: TurnManager, gameMaster: GameMaster, gameB
     for (let row = 0; row < GameBoardConst.numRows; row++) {
         for (let col = 0; col < GameBoardConst.numCols; col++) {
             const gs = gameBoard[row][col];
-            if (gs.pawnType !== GamePawnType.none) {
-                flatListToSave.push({ position: gs.position, pawn: gs.pawnType });
+            if (gs.pawnType !== GamePawnType.none && gs.playerType) {
+                flatListToSave.push({ position: gs.position, pawn: gs.pawnType, player: gs.playerType });
             }
         }
     }

@@ -13,7 +13,7 @@ export class BoardStats implements IGameLoopObject {
     }
 
     clear() {
-        this.updateTurn(GamePawnType.white);
+        this.updateTurn(PlayerType.white);
         this.updateScore({ black: 0, white: 0 });
     }
 
@@ -33,7 +33,7 @@ export class BoardStats implements IGameLoopObject {
         const statStyle = { fontFamily: GameBoardConst.fontFamily, color: "green" };
         let { x: startX, y: startY } = getBoardPos(9, 0);
 
-        const turnText = "turn: " + GamePawnType.white;
+        const turnText = "turn: " + GamePawnType.whitePawn;
         this.turnImg = getNewText({ x: startX, y: startY }, turnText || "x", statStyle).setOrigin(0, 0);
 
         const scoreText = "score: w: 0 / b: 0";

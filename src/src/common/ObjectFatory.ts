@@ -1,6 +1,6 @@
 import phaser from "phaser";
 import { GameBoardConst } from "../board/GameBoardConst";
-import { ImageType, ImageSpritesMap } from "../board/types";
+import { AllBoardImageMap, ImageType } from "../board/types";
 import { Button } from "../menu/Button";
 import { ButtonLabel } from "../menu/ButtonLabel";
 import { GameContext } from "./GameContex";
@@ -30,7 +30,7 @@ export const createMenuButton = (position: Point, buttonLabel: string, onClickHa
 
 export const getNewImage = (point: Point, type: ImageType) => {
     const { x, y } = point
-    return GameContext.instance.currentScene.add.image(x, y, ImageSpritesMap[type]).setName(type);
+    return GameContext.instance.currentScene.add.image(x, y, AllBoardImageMap[type]).setName(type);
 }
 
 export const getNewText = (point: Point, text: string, style?: phaser.Types.GameObjects.Text.TextStyle) => {

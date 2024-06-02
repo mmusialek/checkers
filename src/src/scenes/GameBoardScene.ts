@@ -19,6 +19,9 @@ export class GameBoardScene extends Phaser.Scene {
     preload(): void {
         this.load.image('white_pawn', 'assets/board/white_pawn.png');
         this.load.image('black_pawn', 'assets/board/black_pawn.png');
+        this.load.image('white_queen', 'assets/board/white_queen.png');
+        this.load.image('black_queen', 'assets/board/black_queen.png');
+
         this.load.image('shadow_pawn', 'assets/board/shadow_pawn.png');
         this.load.image('not_allowed', 'assets/board/not_allowed.png');
 

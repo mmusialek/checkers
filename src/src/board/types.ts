@@ -1,20 +1,14 @@
 import phaser from "phaser";
 import { GameSquere } from "./GameSquere";
 
-export type ImageType = BoardSquereType | GamePawnType;
 
-export enum BoardSquereType {
-    blackSquere = "black_squere",
-    whiteSquere = "white_squere"
-}
-
-export enum GamePawnType {
-    none = "none",
+export enum PlayerType {
     white = "white",
     black = "black",
-    shadow = "shadow",
-    notAllowed = "notAllowed",
 }
+
+export declare type BoardType = { [key in PlayerType]: number };
+export type ImageType = BoardSquereType | GamePawnType;
 
 export enum MovementType {
     None = "None",
@@ -24,33 +18,51 @@ export enum MovementType {
     Unavailable = "Unavailable",
 }
 
+export enum GamePawnType {
+    none = "none",
+    whitePawn = "white_pawn",
+    whiteQueen = "white_queen",
+    blackPawn = "black_pawn",
+    blackQueen = "black_queen",
+    shadow = "shadow",
+    notAllowed = "notAllowed",
+}
+
 export type PawnSpritesMapType = {
     [key in GamePawnType]: string;
 }
 
 export const PawnSpritesMap: PawnSpritesMapType = {
-    [GamePawnType.white]: "white_pawn",
-    [GamePawnType.black]: "black_pawn",
+    [GamePawnType.whitePawn]: "white_pawn",
+    [GamePawnType.blackPawn]: "black_pawn",
+    [GamePawnType.whiteQueen]: "white_queen",
+    [GamePawnType.blackQueen]: "black_queen",
     [GamePawnType.shadow]: "shadow_pawn",
     [GamePawnType.notAllowed]: "not_allowed",
     [GamePawnType.none]: "NONE_NOTHING_HERE"
 }
 
-export type ImageSpritesMapType = {
-    [key in ImageType]: string;
+export type BoardSpriteType = {
+    [key in BoardSquereType]: string;
 }
 
-export const ImageSpritesMap: ImageSpritesMapType = {
-    [GamePawnType.white]: "white_pawn",
-    [GamePawnType.black]: "black_pawn",
-    [GamePawnType.shadow]: "shadow_pawn",
-    [GamePawnType.notAllowed]: "not_allowed",
-    [GamePawnType.none]: "NONE_NOTHING_HERE",
+export enum BoardSquereType {
+    blackSquere = "black_squere",
+    whiteSquere = "white_squere"
+}
+
+export const BoardSpriteMap: BoardSpriteType = {
     [BoardSquereType.blackSquere]: "black_squere",
     [BoardSquereType.whiteSquere]: "white_squere",
 }
 
-export const AllBoardImagesMap = [...Object.values(ImageSpritesMap), ...Object.values(PawnSpritesMap)];
+export const AllBoardImageValues = [...Object.values(BoardSpriteMap), ...Object.values(PawnSpritesMap)];
+export const AllBoardImageMap = { ...BoardSpriteMap, ...PawnSpritesMap };
+
+
+//
+// interfaces
+//
 
 export interface IPhaserScene {
     add: phaser.GameObjects.GameObjectFactory;
@@ -64,14 +76,9 @@ export interface IGameLoopObject {
 }
 
 
-
 export interface SuggestionData {
     effect: GamePawnType;
     moveType: MovementType;
     gameSquere: GameSquere;
+    player: PlayerType;
 }
-
-// board type, player type 
-export declare type PlayerType = GamePawnType.white | GamePawnType.black;
-export declare type BoardType = { [key in PlayerType]: number };
-
