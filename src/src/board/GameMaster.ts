@@ -261,7 +261,6 @@ export class GameMaster {
 
                 const targetGameSquere = this._gameBoard[targetPosition.y][targetPosition.x];
                 const moveType = this.canSelectGameSquere(startingSquere, targetGameSquere);
-
                 const playerType = targetGameSquere.playerType!;
                 const nextDeep = deep + 1;
 
@@ -311,8 +310,7 @@ export class GameMaster {
             for (const horizontalMoveRangeItem of horizontalMoveRange) {
                 const targetPosition: Point = addPointToPoint(startingSquere!.position, { x: horizontalMoveRangeItem, y: vertivalMoveRangeItem });
 
-                if (targetPosition.x < 0 || targetPosition.x > GameBoardConst.numCols - 1 || targetPosition.y < 0 || targetPosition.y > GameBoardConst.numRows - 1)
-                    continue;
+                if (!inGameBoardBounds(targetPosition)) continue;
 
                 const targetGameSquere = this._gameBoard[targetPosition.y][targetPosition.x];
                 const moveType = this.canSelectGameSquere(startingSquere, targetGameSquere);
