@@ -23,12 +23,16 @@ export class GameSquere {
         return this._boardSquereType;
     }
 
+    get label(): string {
+        const tmp = this.name;
+        const pos = `${tmp}\n${this._point.x}-${this._point.y}`;
+        return pos;
+    }
+
     get name(): string {
         const letter = String.fromCharCode(65 + this.position.x);
         const digit = 8 - this.position.y;
-        const tmp = `${letter}${digit}`;
-        const pos = `${tmp}\n${this._point.x}-${this._point.y}`;
-        return pos;
+        return `${letter}${digit}`;
     }
 
     get pawnType(): GamePawnType {
@@ -53,6 +57,7 @@ export class GameSquere {
 
     addEffect(pawn: Pawn) {
         this._effects.push(pawn);
+        this.pawn?.hide();
     }
 
     removeEffects() {
@@ -60,6 +65,7 @@ export class GameSquere {
             item.removePawn();
         }
         this._effects.splice(0, this._effects.length);
+        this.pawn?.show();
     }
 
     hasEffect(type: GamePawnType) {
@@ -135,7 +141,15 @@ export class Pawn {
     }
 
     highlight() {
-        this.image?.setAlpha(0.7);
+        this.image?.setAlpha(0.85);
+    }
+
+    hide() {
+        this.image?.setVisible(false);
+    }
+
+    show() {
+        this.image?.setVisible(true);
     }
 
     unHighlight() {

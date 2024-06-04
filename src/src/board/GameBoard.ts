@@ -102,8 +102,8 @@ export class GameBoard implements IGameLoopObject {
                 const suggestedMove = this._gameMaster.getSuggestion4Field(targetSquere)!;
                 currentScene.input.setDefaultCursor("pointer");
 
-                const img = getNewImage(targetSquere.wordPosition, suggestedMove.effect).setAlpha(.5);
-                targetSquere.addEffect(new Pawn(suggestedMove.player, suggestedMove.effect, img));
+                const img = getNewImage(targetSquere.wordPosition, suggestedMove.effect);
+                targetSquere.addEffect(new Pawn(suggestedMove.player!, suggestedMove.effect, img));
             }
         });
 
@@ -184,7 +184,7 @@ export class GameBoard implements IGameLoopObject {
                 const gs = this.getGameSquereByCoords({ x, y });
                 getNewImage({ x, y }, gs.boardSquereType).setInteractive();
 
-                const text = gs.name;
+                const text = gs.label;
                 getNewText({ x, y }, text || "x", boardCellPosStyle);
             }
         }

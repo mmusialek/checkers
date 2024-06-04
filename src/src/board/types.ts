@@ -80,5 +80,5 @@ export interface SuggestionData {
     effect: GamePawnType;
     moveType: MovementType;
     gameSquere: GameSquere;
-    player: PlayerType;
+    player: PlayerType | undefined;
 }

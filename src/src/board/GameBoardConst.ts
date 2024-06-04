@@ -5,7 +5,7 @@ export const GameBoardConst = {
   numRows: 8,
   numCols: 8,
 
-  playerPawns: [GamePawnType.blackPawn, GamePawnType.whitePawn],
+  playerPawns: [GamePawnType.blackPawn, GamePawnType.whitePawn, GamePawnType.blackQueen, GamePawnType.whiteQueen],
   suggestionPawns: [GamePawnType.shadow, GamePawnType.notAllowed],
 
   blackStartingRows: [0, 1, 2],
