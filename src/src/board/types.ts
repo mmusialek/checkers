@@ -82,3 +82,8 @@ export interface SuggestionData {
     gameSquere: GameSquere;
     player: PlayerType | undefined;
 }
+
+export interface SquereSuggestionCaptureInfo {
+    currentSquere: SuggestionData[];
+    other: SuggestionData[];
+}

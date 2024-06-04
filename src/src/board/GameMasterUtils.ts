@@ -1,6 +1,6 @@
 import { Point } from "../common/type";
 import { GameBoardConst } from "./GameBoardConst";
-import { GamePawnType, SuggestionData } from "./types";
+import { GamePawnType } from "./types";
 
 
 export const isPawn = (pawnType?: GamePawnType) => {

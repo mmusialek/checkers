@@ -121,7 +121,7 @@ export class GameBoard implements IGameLoopObject {
             const { x, y } = topTarget;
             const targetSquere = this.getGameSquereByCoords({ x, y });
 
-            if (!this._gameMaster.selectedSquere || (this._gameMaster.selectedSquere && !this._gameMaster.isSelectedPawnEqual(targetSquere))) {
+            if (!this._gameMaster.selectedSquere || (this._gameMaster.selectedSquere && !this._gameMaster.isSelectedSquereEqual(targetSquere))) {
                 targetSquere.pawn?.unHighlight();
                 currentScene.input.setDefaultCursor("");
             }
@@ -242,7 +242,7 @@ export class GameBoard implements IGameLoopObject {
 
     private selectPawn(target: GameSquere) {
         if (this._gameMaster.selectedSquere) {
-            const isTheSame = this._gameMaster.isSelectedPawnEqual(target);
+            const isTheSame = this._gameMaster.isSelectedSquereEqual(target);
             this._gameMaster.clearSelectedPawn();
             this._gameMaster.clearSuggestions();
 
