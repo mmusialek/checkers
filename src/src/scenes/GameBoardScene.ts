@@ -1,5 +1,6 @@
 import { GameBoard } from "../board/GameBoard";
 import { IGameLoopObject } from "../board/types";
+import { GameContext } from "../common/GameContex";
 import { SceneConst } from "../common/SceneConst";
 
 export class GameBoardScene extends Phaser.Scene {
@@ -17,6 +18,15 @@ export class GameBoardScene extends Phaser.Scene {
     }
 
     preload(): void {
+        // this.load.spritesheet('game_board', 'assets/board/all_sprites.png', { });
+        this.load.spritesheet({
+            key: 'game_board',
+            url: 'assets/board/all_sprites.png',
+            frameConfig: { startFrame: 0, frameWidth: 576, frameHeight: 596, endFrame: 1, margin: 32 }
+        })
+
+        // this.load.image('game_board', 'assets/board/game_board.png');
+
         this.load.image('white_pawn', 'assets/board/white_pawn.png');
         this.load.image('black_pawn', 'assets/board/black_pawn.png');
         this.load.image('white_queen', 'assets/board/white_queen.png');
@@ -33,6 +43,7 @@ export class GameBoardScene extends Phaser.Scene {
     }
 
     create(): void {
+        GameContext.instance.currentScene.input.setTopOnly(false);
         this._gameBoard.create?.();
     }
 

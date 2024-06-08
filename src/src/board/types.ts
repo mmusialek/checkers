@@ -8,7 +8,8 @@ export enum PlayerType {
 }
 
 export declare type BoardType = { [key in PlayerType]: number };
-export type ImageType = BoardSquereType | GamePawnType;
+export type ImageType = BoardSquereType | GamePawnType | "game_board";
+
 
 export enum MovementType {
     None = "None",
@@ -57,7 +58,7 @@ export const BoardSpriteMap: BoardSpriteType = {
 }
 
 export const AllBoardImageValues = [...Object.values(BoardSpriteMap), ...Object.values(PawnSpritesMap)];
-export const AllBoardImageMap = { ...BoardSpriteMap, ...PawnSpritesMap };
+export const AllBoardImageMap = { ...BoardSpriteMap, ...PawnSpritesMap, "game_board": "game_board" };
 
 
 //

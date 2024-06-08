@@ -1,8 +1,8 @@
 import phaser from "phaser";
 import { GameBoardConst } from "../board/GameBoardConst";
 import { AllBoardImageMap, ImageType } from "../board/types";
-import { Button } from "../menu/Button";
-import { ButtonLabel } from "../menu/ButtonLabel";
+import { Button } from "../uiComponents/Button";
+import { ButtonLabel } from "../uiComponents/ButtonLabel";
 import { GameContext } from "./GameContex";
 import { Point } from "./type";
 

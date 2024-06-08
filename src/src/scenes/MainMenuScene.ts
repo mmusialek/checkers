@@ -22,6 +22,12 @@ export class MainMenuScene extends Phaser.Scene {
     private createMenu() {
         let startY = 100;
         createMenuButtonLabel({ x: 100, y: startY }, "Main Menu");
+        
+        startY += 60;
+        createMenuButton({ x: 100, y: startY }, "How to play", () => {
+            alert("will be implemented");
+        });
+        
         startY += 60;
         if (isSaveAvailable()) {
             createMenuButton({ x: 100, y: startY }, "Load", () => {
@@ -29,6 +35,7 @@ export class MainMenuScene extends Phaser.Scene {
             });
             startY += 60;
         }
+
         createMenuButton({ x: 100, y: startY }, "2 players", () => {
             GameContext.instance.setScene(SceneConst.GameBoardScene, {});
         });

@@ -2,24 +2,26 @@ import { getBoardPos } from "../GameUtils";
 import { getNewImage } from "../common/ObjectFatory";
 import { GameSaveObject, GameSquereSave, saveGame } from "../common/SaveGame";
 import { BoardStats } from "./BoardStats";
+import { GameBoard } from "./GameBoard";
 import { GameBoardConst } from "./GameBoardConst";
 import { GameMaster } from "./GameMaster";
-import { GameSquere, Pawn } from "./GameSquere";
+import { GameSquere } from "./GameSquere";
+import { createPawn } from "./ObjectFactory";
 import { TurnManager } from "./TurnManager";
 import { GamePawnType } from "./types";
 
 
-export const loadData = (turnManager: TurnManager, gameMaster: GameMaster, boardStats: BoardStats, gameBoard: GameSquere[][], data: GameSaveObject): void => {
+export const loadData = (gameBoard: GameBoard, turnManager: TurnManager, gameMaster: GameMaster, boardStats: BoardStats, gameBoardSqueres: GameSquere[][], data: GameSaveObject): void => {
     gameMaster.scoreboard.loadData(data.score);
     turnManager.loadData(data.currentTurn);
 
     for (let i = 0; i < data.board.length; i++) {
-        const { pawn, player, position } = data.board[i];
+        const { pawnType, playerType, position } = data.board[i];
         const { x, y } = position;
         const wordPos = getBoardPos(x, y);
-        const img = getNewImage(wordPos, pawn);
-        img.setInteractive();
-        gameBoard[y][x].addPawn(new Pawn(player, pawn, img));
+        const img = getNewImage(wordPos, pawnType).setInteractive();
+        const newPawn = createPawn(gameBoard, gameMaster, img, pawnType, playerType, gameBoardSqueres[y][x]);
+        gameBoardSqueres[y][x].addPawn(newPawn);
     }
 
 
@@ -34,7 +36,7 @@ export const saveData = (turnManager: TurnManager, gameMaster: GameMaster, gameB
         for (let col = 0; col < GameBoardConst.numCols; col++) {
             const gs = gameBoard[row][col];
             if (gs.pawnType !== GamePawnType.none && gs.playerType) {
-                flatListToSave.push({ position: gs.position, pawn: gs.pawnType, player: gs.playerType });
+                flatListToSave.push({ position: gs.position, pawnType: gs.pawnType, playerType: gs.playerType });
             }
         }
     }

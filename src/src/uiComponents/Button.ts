@@ -28,6 +28,7 @@ export class Button implements IGameLoopObject {
         this.bgHoverImg.setInteractive().setVisible(this.isHover);
 
         this.bgHoverImg.on("pointerdown", (_pointer: phaser.Input.Pointer, _target: phaser.GameObjects.Image[]) => {
+            currentScene.input.setDefaultCursor("");
             buttonData.onClick();
         });
 

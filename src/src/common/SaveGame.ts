@@ -6,8 +6,8 @@ const saveGameKey = "save-game-key";
 
 export interface GameSquereSave {
     position: Point;
-    pawn: GamePawnType;
-    player: PlayerType;
+    pawnType: GamePawnType;
+    playerType: PlayerType;
 }
 
 export interface GameSaveObject {

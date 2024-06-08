@@ -17,7 +17,7 @@ export class ButtonLabel {
         this.bgImg = buttonData.bgImg;
 
         this.textImg.setOrigin(.5, .5).setText(buttonData.text).setDepth(1);
-        this.bgImg.setInteractive();
+        // this.bgImg.setInteractive();
     }
 
 }
