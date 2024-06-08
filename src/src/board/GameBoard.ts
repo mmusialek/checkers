@@ -1,22 +1,19 @@
-import phaser from "phaser";
 import { TurnManager } from "./TurnManager";
-import { GameSquere, Pawn } from "./GameSquere";
+import { GameSquere } from "./GameSquere";
 import { GameBoardConst } from "./GameBoardConst";
 import {
   addPointToPoint,
   getBoardPos,
-  getGameSquereByCoords,
 } from "../GameUtils";
 import {
   GamePawnType,
   BoardSquereType,
   IGameLoopObject,
-  AllBoardImageValues,
   PlayerType,
 } from "./types";
 import { GameMaster } from "./GameMaster";
 import { BoardStats } from "./BoardStats";
-import { FunctionType, Point } from "../common/type";
+import { FunctionType } from "../common/type";
 import { GameContext } from "../common/GameContex";
 import {
   createMenuButton,
