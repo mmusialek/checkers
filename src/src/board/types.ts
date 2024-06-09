@@ -61,6 +61,12 @@ export const AllBoardImageValues = [...Object.values(BoardSpriteMap), ...Object.
 export const AllBoardImageMap = { ...BoardSpriteMap, ...PawnSpritesMap, "game_board": "game_board" };
 
 
+export enum GameOverType {
+    None,
+    NoPawns,
+    NoMoves
+}
+
 //
 // interfaces
 //
@@ -87,4 +93,5 @@ export interface SuggestionData {
 export interface SquereSuggestionCaptureInfo {
     currentSquere: SuggestionData[];
     other: SuggestionData[];
+    currentPlayerSqueres: GameSquere[];
 }

@@ -5,6 +5,7 @@ import { BoardStats } from "./BoardStats";
 import { GameBoard } from "./GameBoard";
 import { GameBoardConst } from "./GameBoardConst";
 import { GameMaster } from "./GameMaster";
+import { getPawnYOffset } from "./GameMasterUtils";
 import { GameSquere } from "./GameSquere";
 import { createPawn } from "./ObjectFactory";
 import { TurnManager } from "./TurnManager";
@@ -19,7 +20,7 @@ export const loadData = (gameBoard: GameBoard, turnManager: TurnManager, gameMas
         const { pawnType, playerType, position } = data.board[i];
         const { x, y } = position;
         const wordPos = getBoardPos(x, y);
-        const img = getNewImage(wordPos, pawnType).setInteractive();
+        const img = getNewImage(getPawnYOffset(wordPos, pawnType), pawnType).setInteractive();
         const newPawn = createPawn(gameBoard, gameMaster, img, pawnType, playerType, gameBoardSqueres[y][x]);
         gameBoardSqueres[y][x].addPawn(newPawn);
     }

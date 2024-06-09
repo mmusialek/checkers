@@ -18,14 +18,7 @@ export class GameBoardScene extends Phaser.Scene {
     }
 
     preload(): void {
-        // this.load.spritesheet('game_board', 'assets/board/all_sprites.png', { });
-        this.load.spritesheet({
-            key: 'game_board',
-            url: 'assets/board/all_sprites.png',
-            frameConfig: { startFrame: 0, frameWidth: 576, frameHeight: 596, endFrame: 1, margin: 32 }
-        })
-
-        // this.load.image('game_board', 'assets/board/game_board.png');
+        this.load.image('game_board', 'assets/board/game_board.png');
 
         this.load.image('white_pawn', 'assets/board/white_pawn.png');
         this.load.image('black_pawn', 'assets/board/black_pawn.png');
@@ -34,9 +27,6 @@ export class GameBoardScene extends Phaser.Scene {
 
         this.load.image('shadow_pawn', 'assets/board/shadow_pawn.png');
         this.load.image('not_allowed', 'assets/board/not_allowed.png');
-
-        this.load.image('black_squere', 'assets/board/black_squere.png');
-        this.load.image('white_squere', 'assets/board/white_squere.png');
 
         this.load.image('menu_button_hover', 'assets/menu/button_bg_hover.png');
         this.load.image('menu_button', 'assets/menu/button_bg.png');

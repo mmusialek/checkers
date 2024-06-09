@@ -5,6 +5,7 @@ import { GameBoard } from "./GameBoard";
 import { GameMaster } from "./GameMaster";
 import { GameSquere, Pawn } from "./GameSquere";
 import { GamePawnType, PlayerType } from "./types";
+import { addPointToPoint } from "../GameUtils";
 
 export const createPawn = (
     gameBoard: GameBoard,
@@ -35,7 +36,7 @@ export const createPawn = (
                 const suggestedMove = gameMaster.getSuggestion4Field(gameSquere)!;
                 currentScene.input.setDefaultCursor("pointer");
 
-                const img = getNewImage(gameSquere.wordPosition, suggestedMove.effect);
+                const img = getNewImage(addPointToPoint(gameSquere.wordPosition, { x: 0, y: -7 }), suggestedMove.effect);
                 const effect = Pawn.new({
                     image: img,
                     type: suggestedMove.effect,
@@ -91,7 +92,7 @@ export const createGameSquereRectangleHandlers = (
                 currentScene.input.setDefaultCursor("pointer");
 
                 const img = getNewImage(
-                    parent.wordPosition,
+                    addPointToPoint(parent.wordPosition, { x: 0, y: -7 }),
                     suggestedMove.effect
                 ).setInteractive();
 

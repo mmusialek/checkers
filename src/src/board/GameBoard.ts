@@ -24,6 +24,7 @@ import { loadGame } from "../common/SaveGame";
 import { loadData, saveData } from "./GameBoardSaveManager";
 import { SceneConst } from "../common/SceneConst";
 import { createGameSquereRectangleHandlers, createPawn } from "./ObjectFactory";
+import { getPawnYOffset } from "./GameMasterUtils";
 
 export class GameBoard implements IGameLoopObject {
   private readonly _gameBoard: GameSquere[][] = [];
@@ -190,12 +191,13 @@ export class GameBoard implements IGameLoopObject {
     }
 
     getNewImage({ x: 32, y: 32 }, "game_board").setOrigin(0, 0);
-    GameContext.instance.currentScene.add.rectangle();
+    // GameContext.instance.currentScene.add.rectangle();
 
     const boardCellPosStyle = {
       fontFamily: GameBoardConst.fontFamily,
       color: "green",
     };
+
     for (let row = 0; row < GameBoardConst.numRows; row++) {
       this._gameBoard[row] = [];
       for (let col = 0; col < GameBoardConst.numCols; col++) {
@@ -226,11 +228,8 @@ export class GameBoard implements IGameLoopObject {
             ? GamePawnType.blackPawn
             : GamePawnType.whitePawn;
           const playerType = blackPawn ? PlayerType.black : PlayerType.white;
-          const pawnPos = addPointToPoint(gameSquere.wordPosition, {
-            x: 0,
-            y: -4,
-          });
 
+          const pawnPos = getPawnYOffset(gameSquere.wordPosition, pawnType);
           const img = getNewImage(pawnPos, pawnType).setName(pawnType).setInteractive();
           const pawnToAdd = createPawn(this, this._gameMaster, img, pawnType, playerType, gameSquere);
           gameSquere.addPawn(pawnToAdd);

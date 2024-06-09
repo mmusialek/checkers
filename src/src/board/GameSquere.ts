@@ -9,6 +9,7 @@ import { Point } from "../common/type";
 import * as phaser from "phaser";
 import { GameContext } from "../common/GameContex";
 import { GameBoardConst } from "./GameBoardConst";
+import { getPawnYOffset } from "./GameMasterUtils";
 
 
 interface GameSquereHandlersProps {
@@ -108,8 +109,8 @@ export class GameSquere {
     }
 
     addEffect(pawn: Pawn) {
-        this._effects.push(pawn);
         this.pawn?.hide();
+        this._effects.push(pawn);
     }
 
     removeEffects() {
@@ -250,7 +251,8 @@ export class Pawn {
     }
 
     move(point: Point) {
-        this.image?.setPosition(point.x, point.y);
+        const targetWordPos = getPawnYOffset(point, this.pawnType)
+        this.image?.setPosition(targetWordPos.x, targetWordPos.y);
     }
 
     removePawn() {
@@ -266,9 +268,10 @@ export class Pawn {
                 : GamePawnType.blackQueen;
         this.setPawnType(newType);
 
+        const pos = getPawnYOffset({ x: this.image!.x, y: this.image!.y }, this.pawnType);
         const queenImg = GameContext.instance.currentScene.add.image(
-            this._image!.x,
-            this._image!.y,
+            pos.x,
+            pos.y,
             AllBoardImageMap[newType]
         ).setName(newType).setInteractive();
         this._image!.destroy();
@@ -282,10 +285,14 @@ export class Pawn {
 
     hide() {
         this.image?.setVisible(false);
+        this.image?.setActive(false);
+        this.image?.disableInteractive();
     }
 
     show() {
         this.image?.setVisible(true);
+        this.image?.setActive(true);
+        this.image?.setInteractive();
     }
 
     unHighlight() {

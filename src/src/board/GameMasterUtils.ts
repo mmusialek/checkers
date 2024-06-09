@@ -1,3 +1,4 @@
+import { addPointToPoint } from "../GameUtils";
 import { Point } from "../common/type";
 import { GameBoardConst } from "./GameBoardConst";
 import { GamePawnType } from "./types";
@@ -17,3 +18,10 @@ export const inGameBoardBounds = (targetPoint: Point) => {
 }
 
 export const directionArray: Point[] = [{ x: 1, y: 1 }, { x: -1, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }];
+
+
+export const getPawnYOffset = (wordPos: Point, pawnType: GamePawnType): Point => {
+    const offset = pawnType === (GamePawnType.blackPawn || GamePawnType.whitePawn) ? -7 : -3;
+    const res = addPointToPoint(wordPos, { x: 0, y: offset })
+    return res;
+}

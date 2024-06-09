@@ -1,7 +1,7 @@
 import { GameSquere } from "./GameSquere";
 import { TurnManager } from "./TurnManager";
 import { GameBoardConst } from "./GameBoardConst";
-import { GamePawnType, MovementType, PlayerType, SquereSuggestionCaptureInfo, SuggestionData } from "./types";
+import { GameOverType, GamePawnType, MovementType, PlayerType, SquereSuggestionCaptureInfo, SuggestionData } from "./types";
 import { addPointToPoint, getOppositeDirection } from "../GameUtils";
 import { ScoreBoard } from "./ScoreBoard";
 import { Point } from "../common/type";
@@ -149,7 +149,8 @@ export class GameMaster {
         this._selectedSquere.pawn?.highlight();
         this._boardStats.updateTurn(this._turnManager.currentTurn);
 
-        this.calculateSuggestion();
+        const info = this.calculateSuggestion();
+        this.checkForGameOver(info);
     }
 
 
@@ -177,8 +178,13 @@ export class GameMaster {
             return false;
         }
 
-        this.calculateSuggestion();
+        const info = this.calculateSuggestion();
         const canMove = this._suggestedFields.some(q => q.moveType === MovementType.CaptureAfterEnemy);
+
+        // check if game over
+        this.checkForGameOver(info);
+
+
         if (!canMove) {
             this.clearSuggestions();
         }
@@ -193,8 +199,8 @@ export class GameMaster {
         return lastSuggestion;
     }
 
-    private calculateSuggestion() {
-        if (!this._selectedSquere) return;
+    private calculateSuggestion(): SquereSuggestionCaptureInfo | null {
+        if (!this._selectedSquere) return null;
 
         const captureInfo = this.checkForCaptures();
         const suggestedFields = captureInfo.currentSquere;
@@ -214,6 +220,8 @@ export class GameMaster {
         }
 
         this._suggestedFields = suggestedFields;
+
+        return captureInfo;
     }
 
     private getSuggestions(startingSquere: GameSquere): SuggestionData[] {
@@ -378,7 +386,47 @@ export class GameMaster {
 
         return {
             currentSquere: selectedSquereSuggestions || [],
-            other: otherSuggestions || []
+            other: otherSuggestions || [],
+            currentPlayerSqueres
         };
+    }
+
+    private checkForGameOver(currentMoveInfo: SquereSuggestionCaptureInfo | null): GameOverType {
+
+        let res = GameOverType.None;
+
+        if (!currentMoveInfo) return res;
+
+        if (currentMoveInfo.currentPlayerSqueres.length === 0) {
+            // isGameOver = true;
+            res = GameOverType.NoPawns;
+        }
+
+        const allowedMoves = [MovementType.CaptureAfterEnemy, MovementType.Normal];
+        // currentMoveInfo.currentSquere.map(q => q.moveType).some(q => allowedMoves.includes(q));
+
+
+        const allMoves: SuggestionData[] = [];
+        allMoves.push(...currentMoveInfo.currentSquere, ...currentMoveInfo.other);
+        let anyMovesLeft = allMoves.reduce((prev, curr) => {
+            const tmp = prev || allowedMoves.includes(curr.moveType);
+            return tmp;
+        }, true);
+
+        if (!anyMovesLeft) {
+            res = GameOverType.NoMoves;
+        }
+        // if (currentMoveInfo.currentSquere.some(q => !allowedMoves.includes(q.moveType))) {
+        //     // isGameOver = true;
+        //     res = GameOverType.NoMoves;
+        // }
+
+
+        if (res !== GameOverType.None) {
+            alert("GAME OVER!\n" + `${this._turnManager.opponentType} winn!`);
+        }
+
+
+        return res;
     }
 }
