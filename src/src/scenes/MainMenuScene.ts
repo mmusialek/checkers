@@ -1,7 +1,8 @@
 import { GameContext } from "../common/GameContex";
-import { createMenuButtonLabel, createMenuButton } from "../common/ObjectFatory";
 import { isSaveAvailable } from "../common/SaveGame";
 import { SceneConst } from "../common/SceneConst";
+import { Button } from "../uiComponents/Button";
+import { ButtonLabel } from "../uiComponents/ButtonLabel";
 
 export class MainMenuScene extends Phaser.Scene {
     constructor() {
@@ -21,22 +22,22 @@ export class MainMenuScene extends Phaser.Scene {
 
     private createMenu() {
         let startY = 100;
-        createMenuButtonLabel({ x: 100, y: startY }, "Main Menu");
-        
+        ButtonLabel.new({ x: 100, y: startY }, "Main Menu");
+
         startY += 60;
-        createMenuButton({ x: 100, y: startY }, "How to play", () => {
+        Button.new({ x: 100, y: startY }, "How to play", () => {
             alert("will be implemented");
         });
-        
+
         startY += 60;
         if (isSaveAvailable()) {
-            createMenuButton({ x: 100, y: startY }, "Load", () => {
+            Button.new({ x: 100, y: startY }, "Load", () => {
                 GameContext.instance.setScene(SceneConst.GameBoardScene, { loadGame: true });
             });
             startY += 60;
         }
 
-        createMenuButton({ x: 100, y: startY }, "2 players", () => {
+        Button.new({ x: 100, y: startY }, "2 players", () => {
             GameContext.instance.setScene(SceneConst.GameBoardScene, {});
         });
     }

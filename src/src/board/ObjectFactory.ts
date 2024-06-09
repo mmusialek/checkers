@@ -120,6 +120,9 @@ export const createGameSquereRectangleHandlers = (
                 });
                 parent.addEffect(effect);
             }
+        },
+        onPointerOut: (parent: GameSquere) => {
+            parent.removeEffects();
         }
     }
 

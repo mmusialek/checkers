@@ -1,6 +1,7 @@
 import phaser from "phaser";
 import { IGameLoopObject } from "../board/types";
 import { GameContext } from "../common/GameContex";
+import { Point } from "../common/type";
 
 interface ButtonProps {
     textImg: phaser.GameObjects.Text;
@@ -18,7 +19,19 @@ export class Button implements IGameLoopObject {
 
     private isHover: boolean = false;
 
-    setData(buttonData: ButtonProps) {
+    static new(position: Point, buttonLabel: string, onClickHandler: () => void) {
+        const sceneAdd = GameContext.instance.currentScene.add;
+        const textImg = sceneAdd.text(position.x, position.y, "").setOrigin(.5, .5);
+        const bgImg = sceneAdd.image(position.x, position.y, "menu_button");
+        const bgHoverImg = sceneAdd.image(position.x, position.y, "menu_button_hover");
+
+        const tmp = new Button();
+        tmp.setData({ bgImg: bgImg, bgHoverImg: bgHoverImg, text: buttonLabel, textImg: textImg, onClick: onClickHandler });
+
+        return tmp;
+    }
+
+    private setData(buttonData: ButtonProps) {
         this.textImg = buttonData.textImg;
         this.bgImg = buttonData.bgImg;
         this.bgHoverImg = buttonData.bgHoverImg;

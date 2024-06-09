@@ -2,7 +2,6 @@ import { TurnManager } from "./TurnManager";
 import { GameSquere } from "./GameSquere";
 import { GameBoardConst } from "./GameBoardConst";
 import {
-  addPointToPoint,
   getBoardPos,
 } from "../GameUtils";
 import {
@@ -16,7 +15,6 @@ import { BoardStats } from "./BoardStats";
 import { FunctionType } from "../common/type";
 import { GameContext } from "../common/GameContex";
 import {
-  createMenuButton,
   getNewImage,
   getNewText,
 } from "../common/ObjectFatory";
@@ -25,6 +23,7 @@ import { loadData, saveData } from "./GameBoardSaveManager";
 import { SceneConst } from "../common/SceneConst";
 import { createGameSquereRectangleHandlers, createPawn } from "./ObjectFactory";
 import { getPawnYOffset } from "./GameMasterUtils";
+import { Button } from "../uiComponents/Button";
 
 export class GameBoard implements IGameLoopObject {
   private readonly _gameBoard: GameSquere[][] = [];
@@ -57,15 +56,15 @@ export class GameBoard implements IGameLoopObject {
     this.initializeBoard(this._loadGame ? this.loadDataHandler : null);
     this._loadGame = false;
 
-    createMenuButton({ x: 8 * 64 + 100 + 30, y: 50 }, "Save", () => {
+    Button.new({ x: 8 * 64 + 100 + 30, y: 50 }, "Save", () => {
       saveData(this._turnManager, this._gameMaster, this._gameBoard);
     });
 
-    createMenuButton({ x: 8 * 64 + 100 + 30 + 120 + 5, y: 50 }, "New", () => {
+    Button.new({ x: 8 * 64 + 100 + 30 + 120 + 5, y: 50 }, "New", () => {
       this.initializeBoard();
     });
 
-    createMenuButton(
+    Button.new(
       { x: 8 * 64 + 100 + 30 + 120 + 120 + 5 + 5, y: 50 },
       "Back",
       () => {
