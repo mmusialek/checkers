@@ -94,4 +94,5 @@ export interface SquereSuggestionCaptureInfo {
     currentSquere: SuggestionData[];
     other: SuggestionData[];
     currentPlayerSqueres: GameSquere[];
+    opponentPlayerSqueres: GameSquere[];
 }

@@ -361,11 +361,14 @@ export class GameMaster {
         const selectedSquereSuggestions: SuggestionData[] = [];
 
         const currentPlayerSqueres: GameSquere[] = [];
+        const opponentPlayerSqueres: GameSquere[] = [];
         for (let row = 0; row < GameBoardConst.numRows; row++) {
             for (let col = 0; col < GameBoardConst.numCols; col++) {
                 const gameSquere = this._gameBoard[row][col];
                 if (gameSquere.playerType === this._turnManager.currentTurn)
                     currentPlayerSqueres.push(gameSquere);
+                else
+                    opponentPlayerSqueres.push(gameSquere);
             }
         }
 
@@ -387,7 +390,8 @@ export class GameMaster {
         return {
             currentSquere: selectedSquereSuggestions || [],
             other: otherSuggestions || [],
-            currentPlayerSqueres
+            currentPlayerSqueres,
+            opponentPlayerSqueres
         };
     }
 
@@ -398,6 +402,11 @@ export class GameMaster {
         if (!currentMoveInfo) return res;
 
         if (currentMoveInfo.currentPlayerSqueres.length === 0) {
+            // isGameOver = true;
+            res = GameOverType.NoPawns;
+        }
+
+        if (currentMoveInfo.opponentPlayerSqueres.length === 0) {
             // isGameOver = true;
             res = GameOverType.NoPawns;
         }

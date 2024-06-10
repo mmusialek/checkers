@@ -12,7 +12,6 @@ export class MainMenuScene extends Phaser.Scene {
     preload(): void {
         this.load.image('menu_button_hover', 'assets/menu/button_bg_hover.png');
         this.load.image('menu_button', 'assets/menu/button_bg.png');
-
     }
 
     create() {
