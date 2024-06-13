@@ -1,6 +1,5 @@
 import { getBoardPos } from "../GameUtils";
 import {
-    AllBoardImageMap,
     BoardSquereType,
     GamePawnType,
     PlayerType,
@@ -10,6 +9,7 @@ import * as phaser from "phaser";
 import { GameContext } from "../common/GameContex";
 import { GameBoardConst } from "./GameBoardConst";
 import { getPawnYOffset } from "./GameMasterUtils";
+import { getNewSprite } from "../common/ObjectFatory";
 
 
 interface GameSquereHandlersProps {
@@ -26,7 +26,7 @@ interface GameSquereParams {
 
 export class GameSquere {
     private _pawn: Pawn | null = null;
-    private _effects: Pawn[] = [];
+    private _effect: Pawn | null = null;
 
     private readonly _wordPoint: Point;
     private _point: Point;
@@ -36,6 +36,7 @@ export class GameSquere {
     private _onPointerDown?: (squere: GameSquere) => void;
     private _onPointerOver?: (squere: GameSquere) => void;
     private _onPointerOut?: (squere: GameSquere) => void;
+    private _isMouseOver: boolean = false;
 
     private constructor({ row, col, handlers }: GameSquereParams) {
         this._point = { x: col, y: row };
@@ -110,19 +111,22 @@ export class GameSquere {
 
     addEffect(pawn: Pawn) {
         this.pawn?.hide();
-        this._effects.push(pawn);
+        this._effect = pawn;
     }
 
     removeEffects() {
-        for (const item of this._effects) {
-            item.removePawn();
-        }
-        this._effects.splice(0, this._effects.length);
+        if (!this._effect) return;
+        this._effect?.removePawn();
+        this._effect = null;
         this.pawn?.show();
     }
 
     hasEffect(type: GamePawnType) {
-        return this._effects.some((q) => q.pawnType == type);
+        return this._effect?.pawnType === type;
+    }
+
+    hasAnyEffect() {
+        return this._effect !== null;
     }
 
     addPawn(pawn: Pawn) {
@@ -148,6 +152,10 @@ export class GameSquere {
         return this._pawn;
     }
 
+    get isMousever(): boolean {
+        return this._isMouseOver;
+    }
+
     // helper methods
 
     private onPointerDown = () => {
@@ -155,11 +163,13 @@ export class GameSquere {
     };
 
     private onPointerOver = () => {
+        this._isMouseOver = true;
         this._onPointerOver?.(this);
     };
 
     private onPointerOut = () => {
         this._onPointerOut?.(this);
+        this._isMouseOver = false;
     };
 
     private resetHandlers() {
@@ -188,7 +198,7 @@ export class GameSquere {
 interface PawnParams {
     player: PlayerType;
     type: GamePawnType;
-    image: phaser.GameObjects.Image;
+    sprite: phaser.GameObjects.Sprite;
     parent: GameSquere;
 
     onPointerDown: (squere: GameSquere) => void;
@@ -197,7 +207,7 @@ interface PawnParams {
 }
 
 export class Pawn {
-    private _image: phaser.GameObjects.Image | null | undefined;
+    private _sprite: phaser.GameObjects.Image | null | undefined;
 
     private _pawnType: GamePawnType = GamePawnType.none;
     private _playerType: PlayerType;
@@ -210,7 +220,7 @@ export class Pawn {
     private constructor({
         player,
         type,
-        image,
+        sprite: image,
         parent,
         onPointerDown,
         onPointerOver,
@@ -218,7 +228,7 @@ export class Pawn {
 
     }: PawnParams) {
         this._pawnType = type;
-        this._image = image;
+        this._sprite = image;
         this._playerType = player;
         this.setParent(parent);
         this._onPointerDown = onPointerDown;
@@ -230,7 +240,6 @@ export class Pawn {
 
     static new(params: PawnParams) {
         const newPawn = new Pawn(params);
-
         return newPawn;
     }
 
@@ -242,8 +251,8 @@ export class Pawn {
         return this._playerType;
     }
 
-    get image() {
-        return this._image;
+    get sprite() {
+        return this._sprite;
     }
 
     setParent(parent: GameSquere) {
@@ -252,7 +261,7 @@ export class Pawn {
 
     move(point: Point) {
         const targetWordPos = getPawnYOffset(point, this.pawnType)
-        this.image?.setPosition(targetWordPos.x, targetWordPos.y);
+        this.sprite?.setPosition(targetWordPos.x, targetWordPos.y);
     }
 
     removePawn() {
@@ -268,35 +277,29 @@ export class Pawn {
                 : GamePawnType.blackQueen;
         this.setPawnType(newType);
 
-        const pos = getPawnYOffset({ x: this.image!.x, y: this.image!.y }, this.pawnType);
-        const queenImg = GameContext.instance.currentScene.add.image(
-            pos.x,
-            pos.y,
-            AllBoardImageMap[newType]
-        ).setName(newType).setInteractive();
-        this._image!.destroy();
-        this._image = queenImg;
+        const pos = getPawnYOffset({ x: this.sprite!.x, y: this.sprite!.y }, this.pawnType);
+        const queenImg = getNewSprite(pos, newType).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
+        this._sprite!.destroy();
+        this._sprite = queenImg;
         this.bindHandlers();
     }
 
     highlight() {
-        this.image?.setAlpha(0.85);
+        this.sprite?.setAlpha(0.85);
     }
 
     hide() {
-        this.image?.setVisible(false);
-        this.image?.setActive(false);
-        this.image?.disableInteractive();
+        this.sprite?.setVisible(false);
+        this.sprite?.setActive(false);
     }
 
     show() {
-        this.image?.setVisible(true);
-        this.image?.setActive(true);
-        this.image?.setInteractive();
+        this.sprite?.setActive(true);
+        this.sprite?.setVisible(true);
     }
 
     unHighlight() {
-        this.image?.setAlpha(1);
+        this.sprite?.setAlpha(1);
     }
 
     private onPointerDown = () => {
@@ -313,9 +316,8 @@ export class Pawn {
 
     private clearImage() {
         this.setPawnType(GamePawnType.none);
-        // this._image?.removeAllListeners();
-        this._image?.destroy();
-        this._image = null;
+        this._sprite?.destroy();
+        this._sprite = null;
     }
 
     private setPawnType(type: GamePawnType) {
@@ -323,9 +325,9 @@ export class Pawn {
     }
 
     private bindHandlers() {
-        this.image?.on("pointerdown", this.onPointerDown);
-        this.image?.on("pointerover", this.onPointerOver);
-        this.image?.on("pointerout", this.onPointerOut);
+        this.sprite?.on("pointerdown", this.onPointerDown);
+        this.sprite?.on("pointerover", this.onPointerOver);
+        this.sprite?.on("pointerout", this.onPointerOut);
     }
 
 }

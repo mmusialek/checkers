@@ -1,5 +1,6 @@
 import { getBoardPos } from "../GameUtils";
-import { getNewImage } from "../common/ObjectFatory";
+import { GameContext } from "../common/GameContex";
+import { getNewSprite } from "../common/ObjectFatory";
 import { GameSaveObject, GameSquereSave, saveGame } from "../common/SaveGame";
 import { BoardStats } from "./BoardStats";
 import { GameBoard } from "./GameBoard";
@@ -20,8 +21,8 @@ export const loadData = (gameBoard: GameBoard, turnManager: TurnManager, gameMas
         const { pawnType, playerType, position } = data.board[i];
         const { x, y } = position;
         const wordPos = getBoardPos(x, y);
-        const img = getNewImage(getPawnYOffset(wordPos, pawnType), pawnType).setInteractive();
-        const newPawn = createPawn(gameBoard, gameMaster, img, pawnType, playerType, gameBoardSqueres[y][x]);
+        const sprite = getNewSprite(getPawnYOffset(wordPos, pawnType), pawnType).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
+        const newPawn = createPawn(gameBoard, gameMaster, sprite, pawnType, playerType, gameBoardSqueres[y][x]);
         gameBoardSqueres[y][x].addPawn(newPawn);
     }
 

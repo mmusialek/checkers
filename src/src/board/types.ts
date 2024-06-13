@@ -29,6 +29,9 @@ export enum GamePawnType {
     notAllowed = "notAllowed",
 }
 
+
+export type PawnEffectType = GamePawnType.shadow | GamePawnType.notAllowed | GamePawnType.none;
+
 export type PawnSpritesMapType = {
     [key in GamePawnType]: string;
 }

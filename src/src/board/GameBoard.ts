@@ -15,7 +15,7 @@ import { BoardStats } from "./BoardStats";
 import { FunctionType } from "../common/type";
 import { GameContext } from "../common/GameContex";
 import {
-  getNewImage,
+  getNewSprite,
   getNewText,
 } from "../common/ObjectFatory";
 import { loadGame } from "../common/SaveGame";
@@ -189,8 +189,7 @@ export class GameBoard implements IGameLoopObject {
       }
     }
 
-    getNewImage({ x: 32, y: 32 }, "game_board").setOrigin(0, 0);
-    // GameContext.instance.currentScene.add.rectangle();
+    getNewSprite({ x: 32, y: 32 }, "game_board").setOrigin(0, 0);
 
     const boardCellPosStyle = {
       fontFamily: GameBoardConst.fontFamily,
@@ -203,7 +202,9 @@ export class GameBoard implements IGameLoopObject {
         const gameSquere = GameSquere.new({ row, col });
         this._gameBoard[row][col] = gameSquere;
 
-        gameSquere.setHandlers(createGameSquereRectangleHandlers(this, this._gameMaster));
+        if (gameSquere.boardSquereType === BoardSquereType.blackSquere) {
+          gameSquere.setHandlers(createGameSquereRectangleHandlers(this, this._gameMaster));
+        }
 
         const { x, y } = getBoardPos(col, row);
         getNewText({ x, y }, gameSquere.label || "x", boardCellPosStyle);
@@ -229,8 +230,8 @@ export class GameBoard implements IGameLoopObject {
           const playerType = blackPawn ? PlayerType.black : PlayerType.white;
 
           const pawnPos = getPawnYOffset(gameSquere.wordPosition, pawnType);
-          const img = getNewImage(pawnPos, pawnType).setName(pawnType).setInteractive();
-          const pawnToAdd = createPawn(this, this._gameMaster, img, pawnType, playerType, gameSquere);
+          const sprite = getNewSprite(pawnPos, pawnType).setName(pawnType).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
+          const pawnToAdd = createPawn(this, this._gameMaster, sprite, pawnType, playerType, gameSquere);
           gameSquere.addPawn(pawnToAdd);
         }
       }

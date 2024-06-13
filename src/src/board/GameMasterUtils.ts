@@ -20,8 +20,9 @@ export const inGameBoardBounds = (targetPoint: Point) => {
 export const directionArray: Point[] = [{ x: 1, y: 1 }, { x: -1, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }];
 
 
+const normalPawns = [GamePawnType.blackPawn, GamePawnType.whitePawn, GamePawnType.notAllowed, GamePawnType.shadow];
 export const getPawnYOffset = (wordPos: Point, pawnType: GamePawnType): Point => {
-    const offset = pawnType === (GamePawnType.blackPawn || GamePawnType.whitePawn) ? -7 : -3;
+    const offset = normalPawns.includes(pawnType) ? -7 : -3;
     const res = addPointToPoint(wordPos, { x: 0, y: offset })
     return res;
 }

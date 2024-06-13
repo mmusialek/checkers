@@ -367,7 +367,7 @@ export class GameMaster {
                 const gameSquere = this._gameBoard[row][col];
                 if (gameSquere.playerType === this._turnManager.currentTurn)
                     currentPlayerSqueres.push(gameSquere);
-                else
+                else if(gameSquere.playerType === this._turnManager.opponentType)
                     opponentPlayerSqueres.push(gameSquere);
             }
         }
@@ -430,10 +430,9 @@ export class GameMaster {
         //     res = GameOverType.NoMoves;
         // }
 
-
-        if (res !== GameOverType.None) {
-            alert("GAME OVER!\n" + `${this._turnManager.opponentType} winn!`);
-        }
+        // if (res !== GameOverType.None) {
+        //     alert("GAME OVER!\n" + `${this._turnManager.opponentType} winn!`);
+        // }
 
 
         return res;

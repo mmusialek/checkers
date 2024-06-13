@@ -5,9 +5,9 @@ import { GameContext } from "./GameContex";
 import { Point } from "./type";
 
 
-export const getNewImage = (point: Point, type: ImageType) => {
+export const getNewSprite = (point: Point, type: ImageType) => {
     const { x, y } = point
-    return GameContext.instance.currentScene.add.image(x, y, AllBoardImageMap[type]).setName(type);
+    return GameContext.instance.currentScene.add.sprite(x, y, AllBoardImageMap[type]).setName(type);
 }
 
 export const getNewText = (point: Point, text: string, style?: phaser.Types.GameObjects.Text.TextStyle) => {
