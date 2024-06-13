@@ -87,6 +87,14 @@ export class GameSquere {
         return this._point;
     }
 
+    get pawn() {
+        return this._pawn;
+    }
+
+    get isMousever(): boolean {
+        return this._isMouseOver;
+    }
+
     //
     // methods
     //
@@ -148,12 +156,10 @@ export class GameSquere {
         tmp!.setParent(targetSquere);
     }
 
-    get pawn() {
-        return this._pawn;
-    }
-
-    get isMousever(): boolean {
-        return this._isMouseOver;
+    destroy() {
+        this._rectangle.destroy();
+        this._effect?.destroy();
+        this.pawn?.destroy();
     }
 
     // helper methods
@@ -208,7 +214,6 @@ interface PawnParams {
 
 export class Pawn {
     private _sprite: phaser.GameObjects.Image | null | undefined;
-
     private _pawnType: GamePawnType = GamePawnType.none;
     private _playerType: PlayerType;
 
@@ -300,6 +305,10 @@ export class Pawn {
 
     unHighlight() {
         this.sprite?.setAlpha(1);
+    }
+
+    destroy() {
+        this._sprite?.destroy();
     }
 
     private onPointerDown = () => {

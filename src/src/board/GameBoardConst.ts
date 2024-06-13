@@ -1,12 +1,7 @@
-import { GamePawnType } from "./types";
-
 export const GameBoardConst = {
   tileSize: 64,
   numRows: 8,
   numCols: 8,
-
-  playerPawns: [GamePawnType.blackPawn, GamePawnType.whitePawn, GamePawnType.blackQueen, GamePawnType.whiteQueen],
-  suggestionPawns: [GamePawnType.shadow, GamePawnType.notAllowed],
 
   blackStartingRows: [0, 1, 2],
   get whiteStartingRows() {

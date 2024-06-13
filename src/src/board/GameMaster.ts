@@ -62,7 +62,7 @@ export class GameMaster {
     }
 
     canSelectPawnNoMoveCheck(target: GameSquere) {
-        return GameBoardConst.playerPawns.includes(target.pawnType) && this._turnManager.currentTurn === target.playerType;
+        return this._turnManager.currentTurn === target.playerType;
     }
 
     canSelectGameSquere(startingSquere: GameSquere, targetSquere: GameSquere): MovementType {
@@ -156,6 +156,7 @@ export class GameMaster {
 
     clearSelectedPawn() {
         this._selectedSquere?.pawn?.unHighlight();
+        this._selectedSquere?.removeEffects()
         this._selectedSquere = null;
         this.clearSuggestions();
         this._boardStats.updateTurn(this._turnManager.currentTurn);

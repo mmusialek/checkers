@@ -26,6 +26,7 @@ import { getPawnYOffset } from "./GameMasterUtils";
 import { Button } from "../uiComponents/Button";
 
 export class GameBoard implements IGameLoopObject {
+  private _gameBoardSprite: Phaser.GameObjects.Sprite | null = null;
   private readonly _gameBoard: GameSquere[][] = [];
 
   private readonly _turnManager: TurnManager;
@@ -71,83 +72,6 @@ export class GameBoard implements IGameLoopObject {
         GameContext.instance.setScene(SceneConst.MainMenuScene);
       }
     );
-
-    //
-    // const currentScene = GameContext.instance.currentScene;
-
-    /* 
-                currentScene.input.on("pointerdown", (_pointer: phaser.Input.Pointer, target: any[]) => {
-                    if (!target || target.length === 0) return;
-                    const topTarget = target[0];
-        
-                    if (this.isBoardItem(topTarget)) {
-                        return;
-                    }
-        
-                    const { x, y } = topTarget;
-                    const targetSquere = this.getGameSquereByCoords({ x, y });
-        
-                    if (this._gameMaster.canSelectPawnNoMoveCheck(targetSquere)) {
-                        this.selectPawn(targetSquere);
-                    } else if (this._gameMaster.canPlacePawn(targetSquere)) {
-                        this.placePawn(targetSquere);
-                    }
-                });
-        
-                currentScene.input.on("pointerover", (_pointer: phaser.Input.Pointer, target: any[]) => {
-                    if (!target || target.length === 0) {
-                        return
-                    };
-        
-                    const topTarget = target[0];
-        
-                    if (this.isBoardItem(topTarget)) {
-                        return;
-                    }
-        
-                    const { x, y } = topTarget;
-                    const targetSquere = this.getGameSquereByCoords({ x, y });
-        
-                    if (!targetSquere) {
-                        console.log("on pointerover: gameSquere not found!")
-                        return;
-                    }
-        
-                    // show pointer
-                    if (this._gameMaster.canSelectPawnNoMoveCheck(targetSquere)) {
-                        currentScene.input.setDefaultCursor("pointer");
-                        targetSquere.pawn?.highlight();
-                    }
-                    else if (this._gameMaster.canSuggestPawn(targetSquere)) {
-                        const suggestedMove = this._gameMaster.getSuggestion4Field(targetSquere)!;
-                        currentScene.input.setDefaultCursor("pointer");
-        
-                        const img = getNewImage(targetSquere.wordPosition, suggestedMove.effect);
-                        targetSquere.addEffect(new Pawn(suggestedMove.player!, suggestedMove.effect, img));
-                    }
-                });
-        
-                currentScene.input.on("pointerout", (_pointer: phaser.Input.Pointer, target: any[]) => {
-                    if (!target || target.length === 0) {
-                        return;
-                    };
-        
-                    const topTarget = target[0];
-        
-                    if (this.isBoardItem(topTarget)) {
-                        return;
-                    }
-        
-                    const { x, y } = topTarget;
-                    const targetSquere = this.getGameSquereByCoords({ x, y });
-        
-                    if (!this._gameMaster.selectedSquere || (this._gameMaster.selectedSquere && !this._gameMaster.isSelectedSquereEqual(targetSquere))) {
-                        targetSquere.pawn?.unHighlight();
-                        currentScene.input.setDefaultCursor("");
-                    }
-        
-                    targetSquere.removeEffects();
-                }); */
   }
   // helper methods
 
@@ -185,11 +109,19 @@ export class GameBoard implements IGameLoopObject {
   private drawBoard() {
     if (this._gameBoard.length) {
       for (let row = 0; row < GameBoardConst.numRows; row++) {
+        for (let col = 0; col < GameBoardConst.numCols; col++) {
+          this._gameBoard[row][col].destroy();
+        }
         this._gameBoard[row].splice(0, GameBoardConst.numCols);
       }
     }
 
-    getNewSprite({ x: 32, y: 32 }, "game_board").setOrigin(0, 0);
+    if (this._gameBoardSprite) {
+      this._gameBoardSprite.destroy();
+      this._gameBoardSprite = null;
+    }
+
+    this._gameBoardSprite = getNewSprite({ x: 32, y: 32 }, "game_board").setOrigin(0, 0);
 
     const boardCellPosStyle = {
       fontFamily: GameBoardConst.fontFamily,
