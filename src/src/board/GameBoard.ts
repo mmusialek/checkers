@@ -191,13 +191,11 @@ export class GameBoard implements IGameLoopObject {
 
     this._gameMaster.moveSelectedPawn(target);
 
-    // add points, remove enemy
+
     this._gameMaster.processMovement(target);
 
     if (!this._gameMaster.checkAnyMovementLeft(target)) {
-      this._turnManager.finishTurn();
-      this._gameMaster.clearSelectedPawn();
-      this._gameMaster.clearPlayerMovement();
+      this._gameMaster.finishTurn();
     }
 
     this._boardStats.updateTurn(this._turnManager.currentTurn);

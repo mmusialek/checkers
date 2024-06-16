@@ -308,7 +308,7 @@ export class Pawn {
     }
 
     destroy() {
-        this._sprite?.destroy();
+        this.clearImage();
     }
 
     private onPointerDown = () => {

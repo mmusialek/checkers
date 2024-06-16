@@ -17,6 +17,7 @@ export class GameMaster {
     private _suggestedFields: SuggestionData[] = [];
 
     private _playerMovement: SuggestionData[] = [];
+    private _currentCaptures: GameSquere[] = [];
 
     constructor(gameBoard: GameSquere[][], turnManager: TurnManager, boardStats: BoardStats) {
         this._gameBoard = gameBoard;
@@ -62,16 +63,18 @@ export class GameMaster {
     }
 
     canSelectPawnNoMoveCheck(target: GameSquere) {
-        return this._turnManager.currentTurn === target.playerType;
+        return this._turnManager.currentTurn === target.playerType && (this._currentCaptures.length === 0 || this._currentCaptures.some(q => q.playerType !== this._turnManager.opponentType));
     }
 
     canSelectGameSquere(startingSquere: GameSquere, targetSquere: GameSquere): MovementType {
         if (this._turnManager.currentTurn !== this._selectedSquere?.playerType)
             return MovementType.Unavailable;
 
-
         if (startingSquere?.playerType === this._turnManager.opponentType && targetSquere.pawnType === GamePawnType.none) {
             return MovementType.CaptureAfterEnemy;
+        }
+        else if (targetSquere.playerType === this._turnManager.opponentType && this._currentCaptures.some(q => q.name === targetSquere.name)) {
+            return MovementType.AlreadyCaptured;
         }
         else if (targetSquere.playerType === this._turnManager.opponentType) {
             return MovementType.CaptureOnEnemy;
@@ -134,14 +137,21 @@ export class GameMaster {
                 const prevGameSquere = this._suggestedFields.find(q => q.gameSquere.position.x === prevPoint.x && q.gameSquere.position.y === prevPoint.y);
 
                 if (prevGameSquere && prevGameSquere.player === this._turnManager.opponentType) {
-                    prevGameSquere.gameSquere.captureEnemyPawn();
-                    this._scoreBoard.incrementScore(this._turnManager.currentTurn);
+                    this.addCapture(prevGameSquere.gameSquere);
                     break;
                 }
                 range++;
             }
         }
         this.clearSuggestions();
+    }
+
+
+    finishTurn() {
+        this.processCaptures();
+        this._turnManager.finishTurn();
+        this.clearSelectedPawn();
+        this.clearPlayerMovement();
     }
 
     setSelectedPawn(pawn: GameSquere) {
@@ -180,7 +190,20 @@ export class GameMaster {
         }
 
         const info = this.calculateSuggestion();
-        const canMove = this._suggestedFields.some(q => q.moveType === MovementType.CaptureAfterEnemy);
+
+        // can process movement if any enemy captures left which have not been previously captured
+        let canMove = false;
+        const captureMoves = this._suggestedFields.filter(q => q.moveType === MovementType.CaptureAfterEnemy);
+        for (const captureMoveItem of captureMoves) {
+            if (captureMoveItem) {
+                const captureEnemySquereIndex = this._suggestedFields.indexOf(captureMoveItem);
+                const captureEnemySquere = this._suggestedFields[captureEnemySquereIndex - 1];
+                if (captureEnemySquere?.moveType === MovementType.CaptureOnEnemy) {
+                    canMove = true;
+                    break;
+                }
+            }
+        }
 
         // check if game over
         this.checkForGameOver(info);
@@ -194,6 +217,20 @@ export class GameMaster {
     }
 
     //helper methods
+
+    private addCapture(gameSquere: GameSquere) {
+        if (this._currentCaptures.length === 0 || !this._currentCaptures.map(q => q.name).includes(gameSquere.name))
+            // if (this._currentCaptures.length === 0 || this._currentCaptures.some(q => q.name !== gameSquere.name))
+            this._currentCaptures.push(gameSquere);
+    }
+
+    private processCaptures() {
+        for (const item of this._currentCaptures) {
+            item.captureEnemyPawn();
+            this._scoreBoard.incrementScore(this._turnManager.currentTurn);
+        }
+        this._currentCaptures.splice(0, this._currentCaptures.length);
+    }
 
     private getLastPlayerMovement() {
         const lastSuggestion = this._playerMovement[this._playerMovement.length - 1];
@@ -286,6 +323,7 @@ export class GameMaster {
                         break;
 
                     case MovementType.CaptureOnEnemy:
+                    case MovementType.AlreadyCaptured:
                         availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
                         const childRes = this.checkQueenSquereSuggestion(targetGameSquere, [directionMoveItem], nextDeep);
                         availableMoves.push(...childRes);
@@ -335,10 +373,10 @@ export class GameMaster {
                         break;
 
                     case MovementType.CaptureOnEnemy:
+                    case MovementType.AlreadyCaptured:
                         availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
                         const childRes = this.checkPawnSquereSuggestion(targetGameSquere, [horizontalMoveRangeItem], [vertivalMoveRangeItem], nextDeep);
                         availableMoves.push(...childRes);
-
                         break;
 
                     case MovementType.CaptureAfterEnemy:
@@ -368,7 +406,7 @@ export class GameMaster {
                 const gameSquere = this._gameBoard[row][col];
                 if (gameSquere.playerType === this._turnManager.currentTurn)
                     currentPlayerSqueres.push(gameSquere);
-                else if(gameSquere.playerType === this._turnManager.opponentType)
+                else if (gameSquere.playerType === this._turnManager.opponentType)
                     opponentPlayerSqueres.push(gameSquere);
             }
         }

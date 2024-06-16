@@ -16,6 +16,7 @@ export enum MovementType {
     Normal = "Normal",
     CaptureOnEnemy = "CaptureOnEnemy",
     CaptureAfterEnemy = "CaptureAfterEnemy",
+    AlreadyCaptured = "AlreadyCaptured",
     Unavailable = "Unavailable",
 }
 
