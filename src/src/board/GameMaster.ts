@@ -108,14 +108,6 @@ export class GameMaster {
             throw new Error("something went evidently in wrong way.")
 
         this._playerMovement.push(suggestion);
-
-
-        // check if pawn can evolve
-        if (this._turnManager.currentTurn === PlayerType.white && target.position.y === 0 && target.pawnType == GamePawnType.whitePawn) {
-            target.evolveToQueen();
-        } else if (this._turnManager.currentTurn === PlayerType.black && target.position.y === 7 && target.pawnType == GamePawnType.blackPawn) {
-            target.evolveToQueen();
-        }
     }
 
     processMovement(target: GameSquere) {
@@ -149,6 +141,14 @@ export class GameMaster {
 
     finishTurn() {
         this.processCaptures();
+
+        // check if pawn can evolve
+        if (this._turnManager.currentTurn === PlayerType.white && this._selectedSquere?.position.y === 0 && this._selectedSquere.pawnType == GamePawnType.whitePawn) {
+            this._selectedSquere.evolveToQueen();
+        } else if (this._turnManager.currentTurn === PlayerType.black && this._selectedSquere?.position.y === 7 && this._selectedSquere?.pawnType == GamePawnType.blackPawn) {
+            this._selectedSquere.evolveToQueen();
+        }
+
         this._turnManager.finishTurn();
         this.clearSelectedPawn();
         this.clearPlayerMovement();

@@ -59,6 +59,8 @@ export const createPawn = (
         },
 
         onPointerOut: (gameSquere: GameSquere) => {
+            currentScene.input.setDefaultCursor("");
+
             if (!parent.isMousever) return;
 
             if (
@@ -67,7 +69,6 @@ export const createPawn = (
                     !gameMaster.isSelectedSquereEqual(gameSquere))
             ) {
                 gameSquere.pawn?.unHighlight();
-                currentScene.input.setDefaultCursor("");
             }
 
             gameSquere.removeEffects();
