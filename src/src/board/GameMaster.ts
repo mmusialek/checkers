@@ -263,7 +263,7 @@ export class GameMaster {
     }
 
     private getSuggestions(startingSquere: GameSquere): SuggestionData[] {
-        let suggestedFields: SuggestionData[] = []
+        const suggestedFields: SuggestionData[] = []
 
         const initialMoveRange = [];
 
@@ -334,11 +334,12 @@ export class GameMaster {
                         break;
 
                     case MovementType.CaptureOnEnemy:
-                    case MovementType.AlreadyCaptured:
+                    case MovementType.AlreadyCaptured: {
                         availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
                         const childRes = this.checkSquereSuggestion(initialSquere, targetGameSquere, [directionMoveItem], nextDeep);
                         availableMoves.push(...childRes);
                         canProcess = false;
+                    }
                         break;
 
                     case MovementType.CaptureAfterEnemy:
@@ -416,7 +417,7 @@ export class GameMaster {
 
         const allMoves: SuggestionData[] = [];
         allMoves.push(...currentMoveInfo.currentSquere, ...currentMoveInfo.other);
-        let anyMovesLeft = allMoves.reduce((prev, curr) => {
+        const anyMovesLeft = allMoves.reduce((prev, curr) => {
             const tmp = prev || allowedMoves.includes(curr.moveType);
             return tmp;
         }, true);

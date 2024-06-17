@@ -32,6 +32,7 @@ export class Button {
         this.textImg.setOrigin(.5, .5).setText(buttonData.text).setDepth(1);
         this.bgImg.setInteractive();
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         this.bgImg.on("pointerdown", (_pointer: phaser.Input.Pointer, _target: phaser.GameObjects.Image[]) => {
             currentScene.input.setDefaultCursor("");
             buttonData.onClick();
@@ -39,11 +40,13 @@ export class Button {
 
         const currentScene = GameContext.instance.currentScene;
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         this.bgImg.on("pointerover", (_pointer: phaser.Input.Pointer, _target: phaser.GameObjects.Image[]) => {
             currentScene.input.setDefaultCursor("pointer");
             this.bgImg.setTexture("menu_button_hover");
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         this.bgImg.on("pointerout", (_pointer: phaser.Input.Pointer, _target: phaser.GameObjects.Image[]) => {
             currentScene.input.setDefaultCursor("");
             this.bgImg.setTexture("menu_button");

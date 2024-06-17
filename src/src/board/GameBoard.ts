@@ -49,6 +49,7 @@ export class GameBoard implements IGameLoopObject {
 
   init(data?: object): void {
     if (data && Object.keys(data).length > 0)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this._loadGame = (data as any).loadGame;
   }
 
