@@ -265,27 +265,44 @@ export class GameMaster {
     private getSuggestions(startingSquere: GameSquere): SuggestionData[] {
         let suggestedFields: SuggestionData[] = []
 
+        // if (isPawn(startingSquere.pawnType)) {
+        //     const lastSuggestion = this.getLastPlayerMovement();
+        //     const horizontalDirection: number[] = [1, -1];
+        //     const verticalDirection = (this._turnManager.currentTurn === PlayerType.black ? [1] : [-1]);
+
+        //     if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy) {
+        //         verticalDirection.push(verticalDirection[0] * -1);
+
+        //     }
+        //     suggestedFields.push(...this.checkPawnSquereSuggestion(startingSquere, horizontalDirection, verticalDirection, 1));
+        // }
+
+        // if (isQueen(startingSquere.pawnType)) {
+        //     suggestedFields.push(...this.checkQueenSquereSuggestion(startingSquere, directionArray, 1));
+        // }
+
+        const initialMoveRange = [];
+
         if (isPawn(startingSquere.pawnType)) {
             const lastSuggestion = this.getLastPlayerMovement();
-            const horizontalDirection: number[] = [1, -1];
-            const verticalDirection = (this._turnManager.currentTurn === PlayerType.black ? [1] : [-1]);
+            const verticalDirection = (this._turnManager.currentTurn === PlayerType.black ? 1 : -1);
 
+            initialMoveRange.push({ x: 1, y: verticalDirection }, { x: -1, y: verticalDirection });
             if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy) {
-                verticalDirection.push(verticalDirection[0] * -1);
-
+                initialMoveRange.push({ x: 1, y: verticalDirection * -1 });
+                initialMoveRange.push({ x: -1, y: verticalDirection * -1 });
             }
-            suggestedFields.push(...this.checkPawnSquereSuggestion(startingSquere, horizontalDirection, verticalDirection, 1));
+
+        } else if (isQueen(startingSquere.pawnType)) {
+            initialMoveRange.push(...directionArray)
         }
 
-        if (isQueen(startingSquere.pawnType)) {
-            suggestedFields.push(...this.checkQueenSquereSuggestion(startingSquere, directionArray, 1));
-        }
+        suggestedFields.push(...this.checkSquereSuggestion(startingSquere, startingSquere, initialMoveRange, 1));
 
         return suggestedFields;
     }
 
-
-    private checkQueenSquereSuggestion(startingSquere: GameSquere, initialMoveRange: Point[], deep: number): SuggestionData[] {
+    private checkSquereSuggestion(initialSquere: GameSquere, startingSquere: GameSquere, initialMoveRange: Point[], deep: number): SuggestionData[] {
         const availableMoves: SuggestionData[] = [];
 
         let canProcess = true;
@@ -317,15 +334,25 @@ export class GameMaster {
                     break;
                 }
 
+                if (initialSquere?.pawnType === GamePawnType.blackPawn || initialSquere?.pawnType === GamePawnType.whitePawn) {
+                    if (range > 1)
+                        break;
+                }
+
                 switch (moveType) {
                     case MovementType.Normal:
+                        if (initialSquere?.pawnType === GamePawnType.blackPawn || initialSquere?.pawnType === GamePawnType.whitePawn) {
+                            const lastSuggestion = this._playerMovement[this._playerMovement.length - 1]
+                            if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy)
+                                break;
+                        }
                         availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType, player: playerType });
                         break;
 
                     case MovementType.CaptureOnEnemy:
                     case MovementType.AlreadyCaptured:
                         availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
-                        const childRes = this.checkQueenSquereSuggestion(targetGameSquere, [directionMoveItem], nextDeep);
+                        const childRes = this.checkSquereSuggestion(initialSquere, targetGameSquere, [directionMoveItem], nextDeep);
                         availableMoves.push(...childRes);
                         canProcess = false;
                         break;
@@ -347,53 +374,121 @@ export class GameMaster {
         return availableMoves;
     }
 
-    private checkPawnSquereSuggestion(startingSquere: GameSquere, horizontalMoveRange: number[], verticalMoveRange: number[], deep: number): SuggestionData[] {
-        const availableMoves: SuggestionData[] = [];
 
-        if (deep === 3)
-            return availableMoves;
+    // private checkQueenSquereSuggestion(startingSquere: GameSquere, initialMoveRange: Point[], deep: number): SuggestionData[] {
+    //     const availableMoves: SuggestionData[] = [];
 
-        for (const vertivalMoveRangeItem of verticalMoveRange) {
-            for (const horizontalMoveRangeItem of horizontalMoveRange) {
-                const targetPosition: Point = addPointToPoint(startingSquere!.position, { x: horizontalMoveRangeItem, y: vertivalMoveRangeItem });
+    //     let canProcess = true;
+    //     let range = 1;
 
-                if (!inGameBoardBounds(targetPosition)) continue;
+    //     for (const directionMoveItem of initialMoveRange) {
+    //         range = 1;
+    //         canProcess = true;
 
-                const targetGameSquere = this._gameBoard[targetPosition.y][targetPosition.x];
-                const moveType = this.canSelectGameSquere(startingSquere, targetGameSquere);
-                const playerType = targetGameSquere?.playerType!;
-                const nextDeep = deep + 1;
-
-                switch (moveType) {
-                    case MovementType.Normal:
-                        const lastSuggestion = this._playerMovement[this._playerMovement.length - 1]
-                        if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy)
-                            continue
-                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType, player: playerType });
-                        break;
-
-                    case MovementType.CaptureOnEnemy:
-                    case MovementType.AlreadyCaptured:
-                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
-                        const childRes = this.checkPawnSquereSuggestion(targetGameSquere, [horizontalMoveRangeItem], [vertivalMoveRangeItem], nextDeep);
-                        availableMoves.push(...childRes);
-                        break;
-
-                    case MovementType.CaptureAfterEnemy:
-                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType, player: playerType });
-                        break;
-
-                    case MovementType.Unavailable:
-                    default:
-                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
-                        break;
-                }
-            }
-        }
+    //         while (canProcess) {
+    //             const horizontalMoveRangeItem = (directionMoveItem.x * range);
+    //             const vertivalMoveRangeItem = (directionMoveItem.y * range);
+    //             const targetPosition: Point = addPointToPoint(startingSquere!.position, { x: horizontalMoveRangeItem, y: vertivalMoveRangeItem });
 
 
-        return availableMoves;
-    }
+    //             if (!inGameBoardBounds(targetPosition)) {
+    //                 break;
+    //             }
+
+    //             const targetGameSquere = this._gameBoard[targetPosition.y][targetPosition.x];
+    //             const moveType = this.canSelectGameSquere(startingSquere, targetGameSquere);
+    //             const playerType = targetGameSquere.playerType!;
+    //             const nextDeep = deep + 1;
+
+
+    //             // cann't jump over 2 enemies
+    //             if (deep > 1 && startingSquere.playerType === this._turnManager.opponentType && targetGameSquere.playerType) {
+    //                 canProcess = false;
+    //                 break;
+    //             }
+
+    //             switch (moveType) {
+    //                 case MovementType.Normal:
+    //                     // if (this._selectedSquere?.pawnType === GamePawnType.blackPawn || this._selectedSquere?.pawnType === GamePawnType.whitePawn) {
+    //                     //     const lastSuggestion = this._playerMovement[this._playerMovement.length - 1]
+    //                     //     if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy)
+    //                     //         continue
+    //                     // }
+    //                     availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType, player: playerType });
+    //                     break;
+
+    //                 case MovementType.CaptureOnEnemy:
+    //                 case MovementType.AlreadyCaptured:
+    //                     availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
+    //                     const childRes = this.checkQueenSquereSuggestion(targetGameSquere, [directionMoveItem], nextDeep);
+    //                     availableMoves.push(...childRes);
+    //                     canProcess = false;
+    //                     break;
+
+    //                 case MovementType.CaptureAfterEnemy:
+    //                     availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType, player: playerType });
+    //                     break;
+
+    //                 case MovementType.Unavailable:
+    //                 default:
+    //                     availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
+    //                     break;
+    //             }
+
+    //             range++;
+    //         }
+    //     }
+
+    //     return availableMoves;
+    // }
+
+    // private checkPawnSquereSuggestion(startingSquere: GameSquere, horizontalMoveRange: number[], verticalMoveRange: number[], deep: number): SuggestionData[] {
+    //     const availableMoves: SuggestionData[] = [];
+
+    //     if (deep === 3)
+    //         return availableMoves;
+
+    //     for (const vertivalMoveRangeItem of verticalMoveRange) {
+    //         for (const horizontalMoveRangeItem of horizontalMoveRange) {
+    //             const targetPosition: Point = addPointToPoint(startingSquere!.position, { x: horizontalMoveRangeItem, y: vertivalMoveRangeItem });
+
+    //             if (!inGameBoardBounds(targetPosition)) continue;
+
+    //             const targetGameSquere = this._gameBoard[targetPosition.y][targetPosition.x];
+    //             const moveType = this.canSelectGameSquere(startingSquere, targetGameSquere);
+    //             const playerType = targetGameSquere?.playerType!;
+    //             const nextDeep = deep + 1;
+
+    //             switch (moveType) {
+    //                 case MovementType.Normal:
+    //                     const lastSuggestion = this._playerMovement[this._playerMovement.length - 1]
+    //                     if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy)
+    //                         continue
+    //                     availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType, player: playerType });
+    //                     break;
+
+    //                 case MovementType.CaptureOnEnemy:
+    //                 case MovementType.AlreadyCaptured:
+    //                     availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
+    //                     const childRes = this.checkPawnSquereSuggestion(targetGameSquere, [horizontalMoveRangeItem], [vertivalMoveRangeItem], nextDeep);
+    //                     availableMoves.push(...childRes);
+    //                     break;
+
+    //                 case MovementType.CaptureAfterEnemy:
+    //                     availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType, player: playerType });
+    //                     break;
+
+    //                 case MovementType.Unavailable:
+    //                 default:
+    //                     availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
+    //                     break;
+    //             }
+    //         }
+    //     }
+
+
+    //     return availableMoves;
+    // }
 
     private checkForCaptures(): SquereSuggestionCaptureInfo {
         const otherSuggestions: SuggestionData[] = [];
@@ -441,12 +536,10 @@ export class GameMaster {
         if (!currentMoveInfo) return res;
 
         if (currentMoveInfo.currentPlayerSqueres.length === 0) {
-            // isGameOver = true;
             res = GameOverType.NoPawns;
         }
 
         if (currentMoveInfo.opponentPlayerSqueres.length === 0) {
-            // isGameOver = true;
             res = GameOverType.NoPawns;
         }
 
@@ -469,9 +562,9 @@ export class GameMaster {
         //     res = GameOverType.NoMoves;
         // }
 
-        // if (res !== GameOverType.None) {
-        //     alert("GAME OVER!\n" + `${this._turnManager.opponentType} winn!`);
-        // }
+        if (res !== GameOverType.None) {
+            alert("GAME OVER!\n" + `${res}\n` + `${this._turnManager.opponentType} winn!`);
+        }
 
 
         return res;

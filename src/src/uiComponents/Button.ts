@@ -45,7 +45,7 @@ export class Button {
         });
 
         this.bgImg.on("pointerout", (_pointer: phaser.Input.Pointer, _target: phaser.GameObjects.Image[]) => {
-            currentScene.input.setDefaultCursor("pointer");
+            currentScene.input.setDefaultCursor("");
             this.bgImg.setTexture("menu_button");
         });
     }
