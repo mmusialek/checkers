@@ -8,7 +8,7 @@ import { Point } from "../common/type";
 import * as phaser from "phaser";
 import { GameContext } from "../common/GameContex";
 import { GameBoardConst } from "./GameBoardConst";
-import { getPawnYOffset } from "./GameMasterUtils";
+import { getPawnYOffset, getPlayerType } from "./GameMasterUtils";
 import { getNewSprite } from "../common/ObjectFatory";
 
 
@@ -75,8 +75,10 @@ export class GameSquere {
         return this._pawn?.pawnType || GamePawnType.none;
     }
 
-    get playerType(): PlayerType | undefined {
-        return this._pawn?.player;
+    get playerType(): PlayerType | null {
+        if (!this._pawn) return null;
+
+        return this._pawn?.playerType;
     }
 
     get wordPosition(): Point {
@@ -202,7 +204,6 @@ export class GameSquere {
 }
 
 interface PawnParams {
-    player: PlayerType;
     type: GamePawnType;
     sprite: phaser.GameObjects.Sprite;
     parent: GameSquere;
@@ -215,7 +216,6 @@ interface PawnParams {
 export class Pawn {
     private _sprite: phaser.GameObjects.Image | null | undefined;
     private _pawnType: GamePawnType = GamePawnType.none;
-    private _playerType: PlayerType;
 
     private _parent!: GameSquere;
     private _onPointerDown: (squere: GameSquere) => void;
@@ -223,7 +223,6 @@ export class Pawn {
     private _onPointerOut?: (squere: GameSquere) => void;
 
     private constructor({
-        player,
         type,
         sprite: image,
         parent,
@@ -234,7 +233,6 @@ export class Pawn {
     }: PawnParams) {
         this._pawnType = type;
         this._sprite = image;
-        this._playerType = player;
         this.setParent(parent);
         this._onPointerDown = onPointerDown;
         this._onPointerOver = onPointerOver;
@@ -252,8 +250,8 @@ export class Pawn {
         return this._pawnType;
     }
 
-    get player(): PlayerType {
-        return this._playerType;
+    get playerType(): PlayerType | null {
+        return getPlayerType(this.pawnType);
     }
 
     get sprite() {
@@ -277,7 +275,7 @@ export class Pawn {
         if (this._pawnType === GamePawnType.none) return;
 
         const newType =
-            this.player === PlayerType.white
+            this.playerType === PlayerType.white
                 ? GamePawnType.whiteQueen
                 : GamePawnType.blackQueen;
         this.setPawnType(newType);

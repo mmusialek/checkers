@@ -245,6 +245,7 @@ export class GameMaster {
 
         const otherHasCaptureMove = captureInfo.other.some(q => q.moveType === MovementType.CaptureAfterEnemy);
         const currentHasCaptureMove = captureInfo.currentSquere.some(q => q.moveType === MovementType.CaptureAfterEnemy);
+
         if (otherHasCaptureMove && !currentHasCaptureMove) {
             for (const suggestedFieldItem of suggestedFields) {
                 suggestedFieldItem.moveType = MovementType.Unavailable;
@@ -292,15 +293,26 @@ export class GameMaster {
         let canProcess = true;
         let range = 1;
 
+
+        const createAvailableMove = (targetGameSquere: GameSquere, effect: GamePawnType, moveType: MovementType, playerType: PlayerType) => {
+            const tmp: SuggestionData = {
+                gameSquere: targetGameSquere,
+                effect: effect,
+                moveType: moveType,
+                player: playerType,
+            };
+
+            return tmp;
+        }
+
+
         for (const directionMoveItem of initialMoveRange) {
             range = 1;
             canProcess = true;
 
             while (canProcess) {
-                const horizontalMoveRangeItem = (directionMoveItem.x * range);
-                const vertivalMoveRangeItem = (directionMoveItem.y * range);
-                const targetPosition: Point = addPointToPoint(startingSquere!.position, { x: horizontalMoveRangeItem, y: vertivalMoveRangeItem });
-
+                const pointToAdd: Point = { x: (directionMoveItem.x * range), y: (directionMoveItem.y * range) }
+                const targetPosition: Point = addPointToPoint(startingSquere!.position, pointToAdd);
 
                 if (!inGameBoardBounds(targetPosition)) {
                     break;
@@ -323,6 +335,7 @@ export class GameMaster {
                         break;
                 }
 
+
                 switch (moveType) {
                     case MovementType.Normal:
                         if (isPawn(initialSquere.pawnType)) {
@@ -330,25 +343,32 @@ export class GameMaster {
                             if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy)
                                 break;
                         }
-                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType, player: playerType });
+                        availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.shadow, moveType, playerType));
                         break;
 
                     case MovementType.CaptureOnEnemy:
                     case MovementType.AlreadyCaptured: {
-                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
+                        availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.notAllowed, moveType, playerType));
                         const childRes = this.checkSquereSuggestion(initialSquere, targetGameSquere, [directionMoveItem], nextDeep);
                         availableMoves.push(...childRes);
-                        canProcess = false;
                     }
                         break;
 
                     case MovementType.CaptureAfterEnemy:
-                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.shadow, moveType: moveType, player: playerType });
+                        {
+                            availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.shadow, moveType, playerType));
+
+                            if (isPawn(initialSquere.pawnType)) {
+                                const newDirectionArray = directionArray.filter(q => q.x !== directionMoveItem.x * -1 || q.y !== directionMoveItem.y * -1);
+                                const childRes = this.checkSquereSuggestion(initialSquere, targetGameSquere, newDirectionArray, nextDeep);
+                                availableMoves.push(...childRes);
+                            }
+                        }
                         break;
 
                     case MovementType.Unavailable:
                     default:
-                        availableMoves.push({ gameSquere: targetGameSquere, effect: GamePawnType.notAllowed, moveType: moveType, player: playerType });
+                        availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.notAllowed, moveType, playerType));
                         break;
                 }
 
@@ -429,7 +449,7 @@ export class GameMaster {
         // TODO detect if no moves because pawns stuck
 
         if (res !== GameOverType.None) {
-            alert("GAME OVER!\n" + `${res}\n` + `${this._turnManager.opponentType} winn!`);
+            alert("GAME OVER!\n" + `${res}\n` + `${this._turnManager.currentTurn} winn!`);
         }
 
 

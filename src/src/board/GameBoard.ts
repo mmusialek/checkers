@@ -8,7 +8,6 @@ import {
   GamePawnType,
   BoardSquereType,
   IGameLoopObject,
-  PlayerType,
 } from "./types";
 import { GameMaster } from "./GameMaster";
 import { BoardStats } from "./BoardStats";
@@ -24,6 +23,7 @@ import { SceneConst } from "../common/SceneConst";
 import { createGameSquereRectangleHandlers, createPawn } from "./ObjectFactory";
 import { getPawnYOffset } from "./GameMasterUtils";
 import { Button } from "../uiComponents/Button";
+import { Checkbox } from "../uiComponents/Checkbox";
 
 export class GameBoard implements IGameLoopObject {
   private _gameBoardSprite: Phaser.GameObjects.Sprite | null = null;
@@ -73,11 +73,36 @@ export class GameBoard implements IGameLoopObject {
         GameContext.instance.setScene(SceneConst.MainMenuScene);
       }
     );
+
+    if (GameContext.instance.debug) {
+      Checkbox.new(
+        { x: 100, y: 700 },
+        "no TM",
+        (checked: boolean) => {
+          if (!GameContext.instance.debugSettings) return;
+
+          if (checked) {
+            GameContext.instance.debugSettings.noTurnManager = true;
+          } else {
+            GameContext.instance.debugSettings.noTurnManager = false;
+          }
+        }
+      );
+
+      Button.new(
+        { x: 240, y: 700 },
+        "next turn",
+        () => {
+          this._turnManager.finishTurn();
+          this._boardStats.updateTurn(this._turnManager.currentTurn);
+        }
+      );
+    }
   }
+
   // helper methods
 
   private initializeBoard(dataHandler?: FunctionType | null) {
-    // this.createGameBoard();
     this.drawBoard();
 
     this._gameMaster.clear();
@@ -160,11 +185,10 @@ export class GameBoard implements IGameLoopObject {
           const pawnType = blackPawn
             ? GamePawnType.blackPawn
             : GamePawnType.whitePawn;
-          const playerType = blackPawn ? PlayerType.black : PlayerType.white;
 
           const pawnPos = getPawnYOffset(gameSquere.wordPosition, pawnType);
           const sprite = getNewSprite(pawnPos, pawnType).setName(pawnType).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
-          const pawnToAdd = createPawn(this, this._gameMaster, sprite, pawnType, playerType, gameSquere);
+          const pawnToAdd = createPawn(this, this._gameMaster, sprite, pawnType, gameSquere);
           gameSquere.addPawn(pawnToAdd);
         }
       }

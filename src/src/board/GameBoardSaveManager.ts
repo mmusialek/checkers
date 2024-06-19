@@ -18,11 +18,11 @@ export const loadData = (gameBoard: GameBoard, turnManager: TurnManager, gameMas
     turnManager.loadData(data.currentTurn);
 
     for (let i = 0; i < data.board.length; i++) {
-        const { pawnType, playerType, position } = data.board[i];
+        const { pawnType, position } = data.board[i];
         const { x, y } = position;
         const wordPos = getBoardPos(x, y);
         const sprite = getNewSprite(getPawnYOffset(wordPos, pawnType), pawnType).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
-        const newPawn = createPawn(gameBoard, gameMaster, sprite, pawnType, playerType, gameBoardSqueres[y][x]);
+        const newPawn = createPawn(gameBoard, gameMaster, sprite, pawnType, gameBoardSqueres[y][x]);
         gameBoardSqueres[y][x].addPawn(newPawn);
     }
 

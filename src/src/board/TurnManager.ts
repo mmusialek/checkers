@@ -1,3 +1,4 @@
+import { GameContext } from "../common/GameContex";
 import { PlayerType } from "./types";
 
 export class TurnManager {
@@ -24,6 +25,8 @@ export class TurnManager {
     }
 
     finishTurn() {
+        if (GameContext.instance.debug && GameContext.instance.debugSettings?.noTurnManager) return;
+
         if (this._pawnTurn === PlayerType.white) {
             this._pawnTurn = PlayerType.black;
         } else {

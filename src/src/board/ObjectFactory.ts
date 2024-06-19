@@ -4,7 +4,7 @@ import { getNewSprite } from "../common/ObjectFatory";
 import { GameBoard } from "./GameBoard";
 import { GameMaster } from "./GameMaster";
 import { GameSquere, Pawn } from "./GameSquere";
-import { GamePawnType, PlayerType } from "./types";
+import { GamePawnType } from "./types";
 import { addPointToPoint } from "../GameUtils";
 
 export const createPawn = (
@@ -12,7 +12,6 @@ export const createPawn = (
     gameMaster: GameMaster,
     sprite: phaser.GameObjects.Sprite,
     pawnType: GamePawnType,
-    playerType: PlayerType,
     parent: GameSquere
 ) => {
     const currentScene = GameContext.instance.currentScene;
@@ -20,7 +19,6 @@ export const createPawn = (
     const pawnToAdd = Pawn.new({
         sprite: sprite,
         type: pawnType,
-        player: playerType,
         parent: parent,
         onPointerDown: (gameSquere: GameSquere) => {
             if (gameMaster.canSelectPawnNoMoveCheck(gameSquere)) {
@@ -44,7 +42,6 @@ export const createPawn = (
                 const effect = Pawn.new({
                     sprite,
                     type: suggestedMove.effect,
-                    player: suggestedMove.player!,
                     parent: gameSquere,
                     onPointerDown: (gameSquere: GameSquere) => {
                         if (gameMaster.canSelectPawnNoMoveCheck(gameSquere)) {
@@ -54,7 +51,6 @@ export const createPawn = (
                 });
 
                 gameSquere.addEffect(effect);
-                // console.log("img over");
             }
         },
 
@@ -72,7 +68,6 @@ export const createPawn = (
             }
 
             gameSquere.removeEffects();
-            // console.log("img out");
         },
     });
 
@@ -109,7 +104,6 @@ export const createGameSquereRectangleHandlers = (
                 const effect = Pawn.new({
                     sprite,
                     type: suggestedMove.effect,
-                    player: suggestedMove.player!,
                     parent: gameSquere,
                     onPointerDown: (gameSquere: GameSquere) => {
                         if (gameMaster.canSelectPawnNoMoveCheck(gameSquere)) {
@@ -119,7 +113,6 @@ export const createGameSquereRectangleHandlers = (
                 });
                 gameSquere.addEffect(effect);
             }
-            // console.log("recangle over");
         },
         onPointerOut: (parent: GameSquere) => {
             if (!parent.isMousever) return;
