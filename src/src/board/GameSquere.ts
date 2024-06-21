@@ -8,7 +8,7 @@ import { Point } from "../common/type";
 import * as phaser from "phaser";
 import { GameContext } from "../common/GameContex";
 import { GameBoardConst } from "./GameBoardConst";
-import { getPawnYOffset, getPlayerType } from "./GameMasterUtils";
+import { getAnimatonName, getPawnYOffset, getPlayerType } from "./GameMasterUtils";
 import { getNewSprite } from "../common/ObjectFatory";
 
 
@@ -122,6 +122,7 @@ export class GameSquere {
     addEffect(pawn: Pawn) {
         this.pawn?.hide();
         this._effect = pawn;
+        this._effect.play();
     }
 
     removeEffects() {
@@ -214,7 +215,7 @@ interface PawnParams {
 }
 
 export class Pawn {
-    private _sprite: phaser.GameObjects.Image | null | undefined;
+    private _sprite: phaser.GameObjects.Sprite | null | undefined;
     private _pawnType: GamePawnType = GamePawnType.none;
 
     private _parent!: GameSquere;
@@ -287,8 +288,9 @@ export class Pawn {
         this.bindHandlers();
     }
 
-    highlight() {
-        this.sprite?.setAlpha(0.85);
+    show() {
+        this.sprite?.setActive(true);
+        this.sprite?.setVisible(true);
     }
 
     hide() {
@@ -296,17 +298,30 @@ export class Pawn {
         this.sprite?.setActive(false);
     }
 
-    show() {
-        this.sprite?.setActive(true);
-        this.sprite?.setVisible(true);
+    highlight() {
+        this.play();
     }
 
     unHighlight() {
-        this.sprite?.setAlpha(1);
+        this.sprite?.stop()
+        this.sprite?.setFrame(0);
+    }
+
+    play() {
+        this.sprite?.play(this.animatonName()!);
     }
 
     destroy() {
         this.clearImage();
+    }
+
+    //
+    // helper methods
+    //
+
+    private animatonName() {
+        if (this.pawnType)
+            return getAnimatonName(this.pawnType);
     }
 
     private onPointerDown = () => {

@@ -34,10 +34,12 @@ export const createPawn = (
                 const suggestedMove = gameMaster.getSuggestion4Field(gameSquere)!;
                 currentScene.input.setDefaultCursor("pointer");
 
+
                 const sprite = getNewSprite(
                     // TODO missing gameSquere.pawnType for effect, correct
                     // getPawnYOffset(gameSquere.wordPosition, gameSquere.pawnType),
-                    addPointToPoint(gameSquere.wordPosition, { x: 0, y: -7 }),
+                    // addPointToPoint(gameSquere.wordPosition, { x: 0, y: -7 }),
+                    addPointToPoint(gameSquere.wordPosition, { x: 0, y: 0 }),
                     suggestedMove.effect);
                 const effect = Pawn.new({
                     sprite,
@@ -57,7 +59,7 @@ export const createPawn = (
         onPointerOut: (gameSquere: GameSquere) => {
             currentScene.input.setDefaultCursor("");
 
-            if (!parent.isMousever) return;
+            if (!gameSquere.isMousever) return;
 
             if (
                 !gameMaster.selectedSquere ||
@@ -98,7 +100,8 @@ export const createGameSquereRectangleHandlers = (
                 const sprite = getNewSprite(
                     // TODO missing gameSquere.pawnType for effect, correct
                     // getPawnYOffset(gameSquere.wordPosition, gameSquere.pawnType),
-                    addPointToPoint(gameSquere.wordPosition, { x: 0, y: -7 }),
+                    // addPointToPoint(gameSquere.wordPosition, { x: 0, y: -7 }),
+                    addPointToPoint(gameSquere.wordPosition, { x: 0, y: 0 }),
                     suggestedMove.effect
                 ).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
                 const effect = Pawn.new({

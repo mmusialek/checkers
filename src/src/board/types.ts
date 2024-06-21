@@ -38,12 +38,12 @@ export type PawnSpritesMapType = {
 }
 
 export const PawnSpritesMap: PawnSpritesMapType = {
-    [GamePawnType.whitePawn]: "white_pawn",
-    [GamePawnType.blackPawn]: "black_pawn",
-    [GamePawnType.whiteQueen]: "white_queen",
-    [GamePawnType.blackQueen]: "black_queen",
-    [GamePawnType.shadow]: "shadow_pawn",
-    [GamePawnType.notAllowed]: "not_allowed",
+    [GamePawnType.whitePawn]: "white_pawn_sheet",
+    [GamePawnType.blackPawn]: "black_pawn_sheet",
+    [GamePawnType.whiteQueen]: "white_queen_sheet",
+    [GamePawnType.blackQueen]: "black_queen_sheet",
+    [GamePawnType.shadow]: "shadow_pawn_sheet",
+    [GamePawnType.notAllowed]: "not_allowed_sheet",
     [GamePawnType.none]: "NONE_NOTHING_HERE"
 }
 

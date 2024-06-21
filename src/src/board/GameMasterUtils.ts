@@ -35,9 +35,31 @@ export const getPlayerType = (pawnType: GamePawnType): PlayerType | null => {
 export const directionArray: Point[] = [{ x: 1, y: 1 }, { x: -1, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }];
 
 
-const normalPawns = [GamePawnType.blackPawn, GamePawnType.whitePawn, GamePawnType.notAllowed, GamePawnType.shadow];
+// TODO remove
 export const getPawnYOffset = (wordPos: Point, pawnType: GamePawnType): Point => {
-    const offset = normalPawns.includes(pawnType) ? -7 : -3;
-    const res = addPointToPoint(wordPos, { x: 0, y: offset })
+    const res = addPointToPoint(wordPos, { x: 0, y: 0 })
     return res;
+}
+
+
+export const getAnimatonName = (pawnType: GamePawnType) => {
+    switch (pawnType) {
+        case GamePawnType.blackPawn:
+            return "black_pawn_anim";
+
+        case GamePawnType.whitePawn:
+            return "white_pawn_anim";
+
+        case GamePawnType.blackQueen:
+            return "black_queen_anim";
+
+        case GamePawnType.whiteQueen:
+            return "white_queen_anim";
+
+        case GamePawnType.shadow:
+            return "shadow_pawn_anim";
+
+        case GamePawnType.notAllowed:
+            return "not_allowed_anim";
+    }
 }
