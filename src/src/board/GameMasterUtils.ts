@@ -1,4 +1,3 @@
-import { addPointToPoint } from "../GameUtils";
 import { Point } from "../common/type";
 import { GameBoardConst } from "./GameBoardConst";
 import { GamePawnType, PlayerType } from "./types";
@@ -33,13 +32,6 @@ export const getPlayerType = (pawnType: GamePawnType): PlayerType | null => {
 }
 
 export const directionArray: Point[] = [{ x: 1, y: 1 }, { x: -1, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }];
-
-
-// TODO remove
-export const getPawnYOffset = (wordPos: Point, pawnType: GamePawnType): Point => {
-    const res = addPointToPoint(wordPos, { x: 0, y: 0 })
-    return res;
-}
 
 
 export const getAnimatonName = (pawnType: GamePawnType) => {

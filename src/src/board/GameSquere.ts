@@ -8,7 +8,7 @@ import { Point } from "../common/type";
 import * as phaser from "phaser";
 import { GameContext } from "../common/GameContex";
 import { GameBoardConst } from "./GameBoardConst";
-import { getAnimatonName, getPawnYOffset, getPlayerType } from "./GameMasterUtils";
+import { getAnimatonName, getPlayerType } from "./GameMasterUtils";
 import { getNewSprite } from "../common/ObjectFatory";
 
 
@@ -184,6 +184,7 @@ export class GameSquere {
     private resetHandlers() {
         this._rectangle.removeAllListeners();
     }
+
     private bindHandlers() {
         this._rectangle.on("pointerdown", this.onPointerDown);
         this._rectangle.on("pointerover", this.onPointerOver);
@@ -264,8 +265,7 @@ export class Pawn {
     }
 
     move(point: Point) {
-        const targetWordPos = getPawnYOffset(point, this.pawnType)
-        this.sprite?.setPosition(targetWordPos.x, targetWordPos.y);
+        this.sprite?.setPosition(point.x, point.y);
     }
 
     removePawn() {
@@ -281,8 +281,7 @@ export class Pawn {
                 : GamePawnType.blackQueen;
         this.setPawnType(newType);
 
-        const pos = getPawnYOffset({ x: this.sprite!.x, y: this.sprite!.y }, this.pawnType);
-        const queenImg = getNewSprite(pos, newType).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
+        const queenImg = getNewSprite(this.sprite!, newType).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
         this._sprite!.destroy();
         this._sprite = queenImg;
         this.bindHandlers();

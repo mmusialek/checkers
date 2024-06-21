@@ -21,7 +21,6 @@ import { loadGame } from "../common/SaveGame";
 import { loadData, saveData } from "./GameBoardSaveManager";
 import { SceneConst } from "../common/SceneConst";
 import { createGameSquereRectangleHandlers, createPawn } from "./ObjectFactory";
-import { getPawnYOffset } from "./GameMasterUtils";
 import { Button } from "../uiComponents/Button";
 import { Checkbox } from "../uiComponents/Checkbox";
 
@@ -186,8 +185,7 @@ export class GameBoard implements IGameLoopObject {
             ? GamePawnType.blackPawn
             : GamePawnType.whitePawn;
 
-          const pawnPos = getPawnYOffset(gameSquere.wordPosition, pawnType);
-          const sprite = getNewSprite(pawnPos, pawnType).setName(pawnType).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
+          const sprite = getNewSprite(gameSquere.wordPosition, pawnType).setName(pawnType).setInteractive(GameContext.instance.currentScene.input.makePixelPerfect());
           const pawnToAdd = createPawn(this, this._gameMaster, sprite, pawnType, gameSquere);
           gameSquere.addPawn(pawnToAdd);
         }

@@ -1,4 +1,3 @@
-import phaser from "phaser";
 import { GameBoard } from "../board/GameBoard";
 import { IGameLoopObject } from "../board/types";
 import { GameContext } from "../common/GameContex";
