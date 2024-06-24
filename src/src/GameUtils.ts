@@ -2,14 +2,15 @@ import { GameBoardConst } from "./board/GameBoardConst";
 import { GameSquere } from "./board/GameSquere";
 import { Point } from "./common/type";
 
-const offset = GameBoardConst.originOffset + GameBoardConst.boardOffset;
+const offsetX = GameBoardConst.originOffset + GameBoardConst.boardXOffset;
+const offsetY = GameBoardConst.originOffset + GameBoardConst.boardYOffset;
 
 export const getBoardPos = (x: number, y: number) => {
-    return { x: ((x * GameBoardConst.tileSize) + offset), y: ((y * GameBoardConst.tileSize) + offset) };
+    return { x: ((x * GameBoardConst.tileSize) + offsetX), y: ((y * GameBoardConst.tileSize) + offsetY) };
 }
 
 export const getArrayPos = (x: number, y: number) => {
-    return { x: ((x - offset) / GameBoardConst.tileSize) || 0, y: ((y - offset) / GameBoardConst.tileSize) || 0 };
+    return { x: ((x - offsetX) / GameBoardConst.tileSize) || 0, y: ((y - offsetY) / GameBoardConst.tileSize) || 0 };
 }
 
 export const getGameSquereByCoords = (gameBoard: GameSquere[][], point: Point): GameSquere => {

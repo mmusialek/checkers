@@ -30,8 +30,8 @@ export class GameBoardScene extends Phaser.Scene {
         this.load.atlas("not_allowed_sheet", "assets/board/not_allowed_sheet.png", "assets/board/not_allowed_sheet.json");
 
 
-        this.load.image("menu_button_hover", "assets/menu/button_bg_hover.png");
-        this.load.image("menu_button", "assets/menu/button_bg.png");
+        this.load.image("menu_button_hover", "assets/menu/button_hover.png");
+        this.load.image("menu_button", "assets/menu/button.png");
     }
 
     create(): void {
@@ -56,6 +56,7 @@ export class GameBoardScene extends Phaser.Scene {
             });
         }
 
+        this.cameras.main.setBackgroundColor("302220");
         GameContext.instance.currentScene.input.setTopOnly(false);
         this._gameBoard.create?.();
     }

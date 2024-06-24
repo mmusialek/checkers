@@ -2,11 +2,17 @@ import phaser from "phaser";
 import { BoardType, GamePawnType, IGameLoopObject, PlayerType } from "./types";
 import { GameBoardConst } from "./GameBoardConst";
 import { getBoardPos } from "../GameUtils";
-import { getNewText } from "../common/ObjectFatory";
+import { getNewSprite, getNewText } from "../common/ObjectFatory";
+import { getAnimatonName } from "./GameMasterUtils";
 
 export class BoardStats implements IGameLoopObject {
     private turnImg!: phaser.GameObjects.Text;
-    private scoreImg!: phaser.GameObjects.Text;
+    private scoreTextImg!: phaser.GameObjects.Text;
+    private scoreWhiteTextImg!: phaser.GameObjects.Text;
+    private scoreBlackTextImg!: phaser.GameObjects.Text;
+
+    private blackPawn!: phaser.GameObjects.Sprite;
+    private whitePawn!: phaser.GameObjects.Sprite;
 
     create(): void {
         this.initStats();
@@ -18,13 +24,18 @@ export class BoardStats implements IGameLoopObject {
     }
 
     updateTurn(pawnTurn: PlayerType) {
-        const turnText = "turn: " + pawnTurn;
-        this.turnImg.setText(turnText);
+        if (pawnTurn === PlayerType.white) {
+            this.whitePawn.setVisible(true);
+            this.blackPawn.setVisible(false);
+        } else {
+            this.blackPawn.setVisible(true);
+            this.whitePawn.setVisible(false);
+        }
     }
 
     updateScore(board: BoardType) {
-        const scoreText = `score: w: ${board.white} / b: ${board.black}`;
-        this.scoreImg.setText(scoreText);
+        this.scoreBlackTextImg.setText(board.black.toString(10));
+        this.scoreWhiteTextImg.setText(board.white.toString(10));
     }
 
     // helper methods
@@ -33,11 +44,21 @@ export class BoardStats implements IGameLoopObject {
         const statStyle = { fontFamily: GameBoardConst.fontFamily, color: "green" };
         let { x: startX, y: startY } = getBoardPos(9, 0);
 
-        const turnText = "turn: " + GamePawnType.whitePawn;
+        this.blackPawn = getNewSprite({ x: startX, y: startY }, GamePawnType.blackPawn);
+
+        startX += 50;
+        const turnText = "turn";
         this.turnImg = getNewText({ x: startX, y: startY }, turnText || "x", statStyle).setOrigin(0, 0);
 
-        const scoreText = "score: w: 0 / b: 0";
-        startY += this.turnImg.height;
-        this.scoreImg = getNewText({ x: startX, y: startY }, scoreText, statStyle).setOrigin(0, 0);
+        startX += 80;
+        this.whitePawn = getNewSprite({ x: startX, y: startY }, GamePawnType.whitePawn);
+
+        const scoreText = "score";
+        startY += this.turnImg.height + 50;
+        this.scoreTextImg = getNewText({ x: this.turnImg.x, y: startY }, scoreText, statStyle).setOrigin(0, 0);
+
+        this.scoreBlackTextImg = getNewText({ x: this.blackPawn.x, y: this.scoreTextImg.y }, "0", statStyle).setOrigin(.5, 0);
+        this.scoreWhiteTextImg = getNewText({ x: this.whitePawn.x, y: this.scoreTextImg.y }, "0", statStyle).setOrigin(.5, 0);
+
     }
 }

@@ -8,10 +8,11 @@ export const GameBoardConst = {
     return [this.numRows - 1, this.numRows - 2, this.numRows - 3]
   },
 
-  boardOffset: 64,
+  boardXOffset: 50,
+  boardYOffset: 150,
 
   get originOffset() {
-    return this.tileSize / 2;
+    return (this.tileSize / 2) + 32;
   },
 
 

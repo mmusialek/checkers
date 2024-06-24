@@ -57,21 +57,27 @@ export class GameBoard implements IGameLoopObject {
     this.initializeBoard(this._loadGame ? this.loadDataHandler : null);
     this._loadGame = false;
 
-    Button.new({ x: 8 * 64 + 100 + 30, y: 50 }, "Save", () => {
-      saveData(this._turnManager, this._gameMaster, this._gameBoard);
-    });
-
-    Button.new({ x: 8 * 64 + 100 + 30 + 120 + 5, y: 50 }, "New", () => {
-      this.initializeBoard();
-    });
+    let startX = (150 / 2) + 50;
+    const startY = 50;
 
     Button.new(
-      { x: 8 * 64 + 100 + 30 + 120 + 120 + 5 + 5, y: 50 },
+      { x: startX, y: startY },
       "Back",
       () => {
         GameContext.instance.setScene(SceneConst.MainMenuScene);
       }
     );
+
+    startX += 150 + 25;
+    Button.new({ x: startX, y: startY }, "Save", () => {
+      saveData(this._turnManager, this._gameMaster, this._gameBoard);
+    });
+
+    startX += 150 + 25;
+    Button.new({ x: startX, y: startY }, "New", () => {
+      this.initializeBoard();
+    });
+
 
     if (GameContext.instance.debug) {
       Checkbox.new(
@@ -146,7 +152,7 @@ export class GameBoard implements IGameLoopObject {
       this._gameBoardSprite = null;
     }
 
-    this._gameBoardSprite = getNewSprite({ x: 32, y: 32 }, "game_board").setOrigin(0, 0);
+    this._gameBoardSprite = getNewSprite({ x: GameBoardConst.boardXOffset, y: GameBoardConst.boardYOffset }, "game_board").setOrigin(0, 0);
 
     const boardCellPosStyle = {
       fontFamily: GameBoardConst.fontFamily,
@@ -163,8 +169,10 @@ export class GameBoard implements IGameLoopObject {
           gameSquere.setHandlers(createGameSquereRectangleHandlers(this, this._gameMaster));
         }
 
-        const { x, y } = getBoardPos(col, row);
-        getNewText({ x, y }, gameSquere.label || "x", boardCellPosStyle);
+        if (GameContext.instance.debug) {
+          const { x, y } = getBoardPos(col, row);
+          getNewText({ x, y }, gameSquere.label || "x", boardCellPosStyle);
+        }
       }
     }
   }

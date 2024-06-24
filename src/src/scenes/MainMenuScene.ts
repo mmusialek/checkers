@@ -1,8 +1,9 @@
+import { MainMenuImages } from "../board/types";
 import { GameContext } from "../common/GameContex";
+import { getNewSprite } from "../common/ObjectFatory";
 import { isSaveAvailable } from "../common/SaveGame";
 import { SceneConst } from "../common/SceneConst";
 import { Button } from "../uiComponents/Button";
-import { ButtonLabel } from "../uiComponents/ButtonLabel";
 
 export class MainMenuScene extends Phaser.Scene {
     constructor() {
@@ -10,20 +11,30 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     preload(): void {
-        this.load.image('menu_button_hover', 'assets/menu/button_bg_hover.png');
-        this.load.image('menu_button', 'assets/menu/button_bg.png');
+        this.load.image('menu_button', 'assets/menu/button.png');
+        this.load.image('menu_button_hover', 'assets/menu/button_hover.png');
+
+        this.load.image('main_menu_board_piece', 'assets/menu/main_menu_board_piece.png');
+        this.load.image('main_menu_title', 'assets/menu/main_menu_title.png');
     }
 
     create() {
         this.createMenu();
+        this.cameras.main.setBackgroundColor("302220");
     }
 
 
     private createMenu() {
-        let startY = 100;
-        ButtonLabel.new({ x: 100, y: startY }, "Main Menu");
 
-        startY += 60;
+        GameContext.instance.currentScene.input.addListener("pointerdown", (pointer) => {
+            console.log(pointer.x + " " + pointer.y);
+        });
+
+        const titleX = 500;
+        const gameTitle = getNewSprite({ x: titleX, y: 100 }, MainMenuImages.MainMenuTitle); ``
+        getNewSprite({ x: titleX, y: 220 + gameTitle.height + 50 }, MainMenuImages.MainMenuBoardPiece);
+
+        let startY = 260;
         Button.new({ x: 100, y: startY }, "How to play", () => {
             alert("will be implemented");
         });
@@ -36,6 +47,11 @@ export class MainMenuScene extends Phaser.Scene {
             startY += 60;
         }
 
+        Button.new({ x: 100, y: startY }, "1 player", () => {
+            GameContext.instance.setScene(SceneConst.GameBoardScene, {});
+        });
+
+        startY += 60;
         Button.new({ x: 100, y: startY }, "2 players", () => {
             GameContext.instance.setScene(SceneConst.GameBoardScene, {});
         });
