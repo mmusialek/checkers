@@ -3,7 +3,6 @@ import { BoardType, GamePawnType, IGameLoopObject, PlayerType } from "./types";
 import { GameBoardConst } from "./GameBoardConst";
 import { getBoardPos } from "../GameUtils";
 import { getNewSprite, getNewText } from "../common/ObjectFatory";
-import { getAnimatonName } from "./GameMasterUtils";
 
 export class BoardStats implements IGameLoopObject {
     private turnImg!: phaser.GameObjects.Text;
@@ -25,11 +24,15 @@ export class BoardStats implements IGameLoopObject {
 
     updateTurn(pawnTurn: PlayerType) {
         if (pawnTurn === PlayerType.white) {
-            this.whitePawn.setVisible(true);
-            this.blackPawn.setVisible(false);
+            this.whitePawn.setAlpha(1);
+            this.blackPawn.setAlpha(.3);
+            // this.whitePawn.setVisible(true);
+            // this.blackPawn.setVisible(false);
         } else {
-            this.blackPawn.setVisible(true);
-            this.whitePawn.setVisible(false);
+            this.blackPawn.setAlpha(1);
+            this.whitePawn.setAlpha(.3);
+            // this.blackPawn.setVisible(true);
+            // this.whitePawn.setVisible(false);
         }
     }
 
