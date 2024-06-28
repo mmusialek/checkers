@@ -1,6 +1,6 @@
 import { Point } from "../common/type";
 import { GameBoardConst } from "./GameBoardConst";
-import { GamePawnType, PlayerType } from "./types";
+import { DialogTypes, GamePawnType, PlayerType } from "./types";
 
 
 export const isPawn = (pawnType?: GamePawnType) => {
@@ -53,5 +53,16 @@ export const getAnimatonName = (pawnType: GamePawnType) => {
 
         case GamePawnType.notAllowed:
             return "not_allowed_anim";
+    }
+}
+
+export const getWinnerDialog = (player: PlayerType): DialogTypes => {
+
+    switch (player) {
+        case PlayerType.black:
+            return DialogTypes.blackWins;
+
+        case PlayerType.white:
+            return DialogTypes.whiteWins;
     }
 }

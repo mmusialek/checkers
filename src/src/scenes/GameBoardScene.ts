@@ -30,9 +30,13 @@ export class GameBoardScene extends phaser.Scene {
         this.load.atlas("shadow_pawn_sheet", "assets/board/shadow_pawn_sheet.png", "assets/board/shadow_pawn_sheet.json");
         this.load.atlas("not_allowed_sheet", "assets/board/not_allowed_sheet.png", "assets/board/not_allowed_sheet.json");
 
+        this.load.image("white_wins", "assets/board/white_wins.png");
+        this.load.image("black_wins", "assets/board/black_wins.png");
+
 
         this.load.image("menu_button_hover", "assets/menu/button_hover.png");
         this.load.image("menu_button", "assets/menu/button.png");
+
     }
 
     create(): void {

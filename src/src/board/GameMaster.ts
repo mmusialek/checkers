@@ -7,6 +7,7 @@ import { ScoreBoard } from "./ScoreBoard";
 import { Point } from "../common/type";
 import { BoardStats } from "./BoardStats";
 import { directionArray, inGameBoardBounds, isPawn, isQueen } from "./GameMasterUtils";
+import { EventTypes, eventsCenter } from "../common/EventCenter";
 
 export class GameMaster {
     private readonly _gameBoard: GameSquere[][];
@@ -449,9 +450,8 @@ export class GameMaster {
         // TODO detect if no moves because pawns stuck
 
         if (res !== GameOverType.None) {
-            alert("GAME OVER!\n" + `${res}\n` + `${this._turnManager.currentTurn} winn!`);
+            eventsCenter.emit(EventTypes.gameOver);
         }
-
 
         return res;
     }

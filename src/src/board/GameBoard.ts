@@ -25,6 +25,8 @@ import { Button } from "../uiComponents/Button";
 import { Checkbox } from "../uiComponents/Checkbox";
 import { FontsConst } from "../common/FontsConts";
 import phaser from "phaser";
+import { getWinnerDialog } from "./GameMasterUtils";
+import { EventTypes, eventsCenter } from "../common/EventCenter";
 
 export class GameBoard implements IGameLoopObject {
   private _gameBoardSprite: phaser.GameObjects.Sprite | null = null;
@@ -105,9 +107,24 @@ export class GameBoard implements IGameLoopObject {
         }
       );
     }
+
+    eventsCenter.on(EventTypes.gameOver, () => { this.showGameOver() });
   }
 
   // helper methods
+
+  private showGameOver() {
+    const x = (this._gameBoardSprite!.width / 2) + GameBoardConst.boardXOffset;
+    const y = (this._gameBoardSprite!.height / 2) + GameBoardConst.boardYOffset;
+    const rect = GameContext.instance.currentScene.add.rectangle(0, 100, window.outerWidth, window.outerHeight - 100, 255, .1).setOrigin(0, 0);
+    const winnerSprite = getNewSprite({ x: x, y: y }, getWinnerDialog(this._turnManager.currentTurn));
+    const btn = Button.new({ x: winnerSprite.x, y: winnerSprite.y + (winnerSprite.height / 2) + 15 }, "New Game", () => {
+      this.initializeBoard();
+      winnerSprite.destroy();
+      btn.destroy();
+      rect.destroy();
+    });
+  }
 
   private initializeBoard(dataHandler?: FunctionType | null) {
     this.drawBoard();

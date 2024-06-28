@@ -8,8 +8,13 @@ export enum PlayerType {
 }
 
 export declare type BoardType = { [key in PlayerType]: number };
-export type ImageType = BoardSquereType | GamePawnType | MainMenuImages | "game_board";
+export type ImageType = BoardSquereType | GamePawnType | MainMenuImages | DialogTypes | "game_board";
 
+
+export enum DialogTypes {
+    whiteWins = "white_wins",
+    blackWins = "black_wins"
+}
 
 export enum MainMenuImages {
     MainMenuBoardPiece = "main_menu_board_piece",
@@ -71,7 +76,9 @@ export const AllBoardImageMap = {
     ...BoardSpriteMap, ...PawnSpritesMap,
     "game_board": "game_board",
     [MainMenuImages.MainMenuBoardPiece]: "main_menu_board_piece",
-    [MainMenuImages.MainMenuTitle]: "main_menu_title"
+    [MainMenuImages.MainMenuTitle]: "main_menu_title",
+    [DialogTypes.blackWins]: "black_wins",
+    [DialogTypes.whiteWins]: "white_wins",
 };
 
 
