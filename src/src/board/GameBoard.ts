@@ -23,9 +23,11 @@ import { SceneConst } from "../common/SceneConst";
 import { createGameSquereRectangleHandlers, createPawn } from "./ObjectFactory";
 import { Button } from "../uiComponents/Button";
 import { Checkbox } from "../uiComponents/Checkbox";
+import { FontsConst } from "../common/FontsConts";
+import phaser from "phaser";
 
 export class GameBoard implements IGameLoopObject {
-  private _gameBoardSprite: Phaser.GameObjects.Sprite | null = null;
+  private _gameBoardSprite: phaser.GameObjects.Sprite | null = null;
   private readonly _gameBoard: GameSquere[][] = [];
 
   private readonly _turnManager: TurnManager;
@@ -155,7 +157,7 @@ export class GameBoard implements IGameLoopObject {
     this._gameBoardSprite = getNewSprite({ x: GameBoardConst.boardXOffset, y: GameBoardConst.boardYOffset }, "game_board").setOrigin(0, 0);
 
     const boardCellPosStyle = {
-      fontFamily: GameBoardConst.fontFamily,
+      fontFamily: FontsConst.fontFamily,
       color: "green",
     };
 

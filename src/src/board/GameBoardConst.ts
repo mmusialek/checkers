@@ -14,8 +14,4 @@ export const GameBoardConst = {
   get originOffset() {
     return (this.tileSize / 2) + 32;
   },
-
-
-  // dispaly things
-  fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
 }

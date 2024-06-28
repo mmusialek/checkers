@@ -3,6 +3,7 @@ import "./style.css"
 import { GameBoardScene } from "./scenes/GameBoardScene";
 import { MainMenuScene } from "./scenes/MainMenuScene";
 import { GameContext } from "./common/GameContex";
+import { HowToSceneScene } from "./scenes/HowToScene";
 
 
 class GameInitializer {
@@ -35,7 +36,7 @@ class GameInitializer {
       type: Phaser.AUTO,
       width: width,
       height: height,
-      scene: [MainMenuScene, GameBoardScene],
+      scene: [MainMenuScene, GameBoardScene, HowToSceneScene],
       autoCenter: Phaser.Scale.Center.CENTER_BOTH,
       canvasStyle: "margin: 0; padding: 0",
       autoFocus: true,

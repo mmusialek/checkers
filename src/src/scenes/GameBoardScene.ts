@@ -1,9 +1,10 @@
+import phaser from "phaser";
 import { GameBoard } from "../board/GameBoard";
 import { IGameLoopObject } from "../board/types";
 import { GameContext } from "../common/GameContex";
 import { SceneConst } from "../common/SceneConst";
 
-export class GameBoardScene extends Phaser.Scene {
+export class GameBoardScene extends phaser.Scene {
     private _gameBoard: IGameLoopObject;
 
     constructor() {

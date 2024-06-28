@@ -1,3 +1,4 @@
+import phaser from "phaser";
 import { SceneConst } from "./SceneConst";
 
 
@@ -9,7 +10,7 @@ export class DebugSettings {
 export class GameContext {
 
     private static _instance: GameContext;
-    private _game!: Phaser.Game;
+    private _game!: phaser.Game;
     private _currentSceneName: string = SceneConst.MainMenuScene;
     private readonly _debugSettings: DebugSettings;
 
@@ -34,11 +35,11 @@ export class GameContext {
         return GameContext._instance;
     }
 
-    init(game: Phaser.Game) {
+    init(game: phaser.Game) {
         this._game = game;
     }
 
-    get currentScene(): Phaser.Scene {
+    get currentScene(): phaser.Scene {
         return this._game.scene.getScene(this._currentSceneName);
     }
 
