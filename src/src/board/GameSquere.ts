@@ -1,4 +1,4 @@
-import { getBoardPos } from "../GameUtils";
+import { getBoardPos } from "./GameUtils";
 import {
     BoardSquereType,
     GamePawnType,

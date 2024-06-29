@@ -3,7 +3,7 @@ import { GameSquere } from "./GameSquere";
 import { GameBoardConst } from "./GameBoardConst";
 import {
   getBoardPos,
-} from "../GameUtils";
+} from "./GameUtils";
 import {
   GamePawnType,
   BoardSquereType,

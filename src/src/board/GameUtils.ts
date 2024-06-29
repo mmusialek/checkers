@@ -1,6 +1,6 @@
-import { GameBoardConst } from "./board/GameBoardConst";
-import { GameSquere } from "./board/GameSquere";
-import { Point } from "./common/type";
+import { GameBoardConst } from "./GameBoardConst";
+import { GameSquere } from "./GameSquere";
+import { Point } from "../common/type";
 
 const offsetX = GameBoardConst.originOffset + GameBoardConst.boardXOffset;
 const offsetY = GameBoardConst.originOffset + GameBoardConst.boardYOffset;

@@ -1,6 +1,6 @@
 import phaser from "phaser";
 import { BoardType, GamePawnType, IGameLoopObject, PlayerType } from "./types";
-import { getBoardPos } from "../GameUtils";
+import { getBoardPos } from "./GameUtils";
 import { getNewSprite, getNewText } from "../common/ObjectFatory";
 import { FontsConst } from "../common/FontsConts";
 

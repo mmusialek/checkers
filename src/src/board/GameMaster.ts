@@ -2,7 +2,7 @@ import { GameSquere } from "./GameSquere";
 import { TurnManager } from "./TurnManager";
 import { GameBoardConst } from "./GameBoardConst";
 import { GameOverType, GamePawnType, MovementType, PlayerType, SquereSuggestionCaptureInfo, SuggestionData } from "./types";
-import { addPointToPoint, getOppositeDirection } from "../GameUtils";
+import { addPointToPoint, getOppositeDirection } from "./GameUtils";
 import { ScoreBoard } from "./ScoreBoard";
 import { Point } from "../common/type";
 import { BoardStats } from "./BoardStats";

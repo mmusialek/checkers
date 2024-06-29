@@ -5,7 +5,7 @@ import { GameBoard } from "./GameBoard";
 import { GameMaster } from "./GameMaster";
 import { GameSquere, Pawn } from "./GameSquere";
 import { GamePawnType } from "./types";
-import { addPointToPoint } from "../GameUtils";
+import { addPointToPoint } from "./GameUtils";
 
 export const createPawn = (
     gameBoard: GameBoard,

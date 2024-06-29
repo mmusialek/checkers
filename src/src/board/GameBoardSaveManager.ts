@@ -1,4 +1,4 @@
-import { getBoardPos } from "../GameUtils";
+import { getBoardPos } from "./GameUtils";
 import { GameContext } from "../common/GameContex";
 import { getNewSprite } from "../common/ObjectFatory";
 import { GameSaveObject, GameSquereSave, saveGame } from "../common/SaveGame";
