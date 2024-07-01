@@ -5,6 +5,7 @@ import { getNewSprite } from "../common/ObjectFatory";
 import { isSaveAvailable } from "../common/SaveGame";
 import { SceneConst } from "../common/SceneConst";
 import { Button } from "../uiComponents/Button";
+import { FontsConst } from "../common/FontsConts";
 
 export class MainMenuScene extends phaser.Scene {
     constructor() {
@@ -12,16 +13,18 @@ export class MainMenuScene extends phaser.Scene {
     }
 
     async preload(): Promise<void> {
-        this.load.image('menu_button', 'assets/menu/button.png');
-        this.load.image('menu_button_hover', 'assets/menu/button_hover.png');
+        this.load.image('menu_button', 'assets/menu/sprites/button.png');
+        this.load.image('menu_button_hover', 'assets/menu/sprites/button_hover.png');
+        this.load.audio("button_highlight", "assets/menu/audio/button_highlight.mp3");
+        this.load.audio("button_click", "assets/menu/audio/button_click.mp3");
 
-        this.load.image('main_menu_board_piece', 'assets/menu/main_menu_board_piece.png');
-        this.load.image('main_menu_title', 'assets/menu/main_menu_title.png');
+        this.load.image('main_menu_board_piece', 'assets/menu/sprites/main_menu_board_piece.png');
+        this.load.image('main_menu_title', 'assets/menu/sprites/main_menu_title.png');
     }
 
     create() {
         this.createMenu();
-        this.cameras.main.setBackgroundColor("302220");
+        this.cameras.main.setBackgroundColor(FontsConst.boardColor);
     }
 
 

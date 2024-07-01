@@ -2,7 +2,7 @@ import { GameSquere } from "./GameSquere";
 import { TurnManager } from "./TurnManager";
 import { GameBoardConst } from "./GameBoardConst";
 import { GameOverType, GamePawnType, MovementType, PlayerType, SquereSuggestionCaptureInfo, SuggestionData } from "./types";
-import { addPointToPoint, getOppositeDirection, getRandomInt } from "./GameUtils";
+import { addPointToPoint, delayCallback, getOppositeDirection, getRandomInt } from "./GameUtils";
 import { ScoreBoard } from "./ScoreBoard";
 import { Point } from "../common/type";
 import { BoardStats } from "./BoardStats";
@@ -168,7 +168,7 @@ export class GameMaster {
         this.clearPlayerMovement();
     }
 
-    makeComputerMove() {
+    async makeComputerMove() {
 
         const suggestionsForEachPawn: { startingSquere: GameSquere, suggestions: SuggestionData[] }[] = [];
 
@@ -231,8 +231,13 @@ export class GameMaster {
         }
 
 
-        this.moveSelectedPawn(target);
-        this.processMovement(target);
+        await delayCallback(() => {
+            this.moveSelectedPawn(target);
+        }, 500);
+
+        await delayCallback(() => {
+            this.processMovement(target);
+        }, 500);
 
         if (!this.checkAnyMovementLeft(target)) {
             this.finishTurn();
@@ -242,62 +247,6 @@ export class GameMaster {
 
         this._boardStats.updateTurn(this._turnManager.currentTurn);
         this._boardStats.updateScore(this.getBoard());
-
-    }
-
-    makeComputerMove2() {
-        // const moveSuggestions = this.calculateSuggestion();
-        // this._computerAi.makeMove(this.getSuggestions);
-
-        const suggestionsForEachPawn: { startingSquere: GameSquere, suggestions: SuggestionData[] }[] = [];
-
-        const currentPlayerSqueres: GameSquere[] = [];
-        for (let row = 0; row < GameBoardConst.numRows; row++) {
-            for (let col = 0; col < GameBoardConst.numCols; col++) {
-                const gameSquere = this._gameBoard[row][col];
-                if (gameSquere.playerType === this._turnManager.currentTurn)
-                    currentPlayerSqueres.push(gameSquere);
-            }
-        }
-
-        for (let i = 0; i < currentPlayerSqueres.length; i++) {
-            this._selectedSquere = currentPlayerSqueres[i];
-            const suggestions = this.getSuggestions(currentPlayerSqueres[i]);
-            suggestionsForEachPawn.push({
-                startingSquere: currentPlayerSqueres[i],
-                suggestions
-            });
-        }
-
-        this._selectedSquere = null;
-
-        let moved = false;
-        let normalMove: { startingSquere: GameSquere, suggestion: SuggestionData } | null = null;
-        for (const item of suggestionsForEachPawn) {
-            const captureMove = item.suggestions.find(q => q.moveType === MovementType.CaptureAfterEnemy);
-            if (captureMove) {
-                item.startingSquere.movePawn(captureMove.gameSquere)
-                this._selectedSquere = captureMove.gameSquere;
-                moved = true;
-                break;
-            }
-
-            const tmp = item.suggestions.find(q => q.moveType === MovementType.Normal);
-            if (tmp && !normalMove) {
-                normalMove = { startingSquere: item.startingSquere, suggestion: tmp };
-            }
-        }
-
-        if (!moved) {
-            this._selectedSquere = normalMove?.startingSquere || null;
-            normalMove?.startingSquere.movePawn(normalMove.suggestion.gameSquere);
-        }
-
-        if (this._selectedSquere) {
-            if (!this.checkAnyMovementLeft(this._selectedSquere)) {
-                this.finishTurn();
-            }
-        }
     }
 
     setSelectedPawn(pawn: GameSquere) {

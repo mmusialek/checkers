@@ -2,6 +2,7 @@ import phaser from "phaser";
 import { GameContext } from "../common/GameContex";
 import { Point } from "../common/type";
 import { FontsConst } from "../common/FontsConts";
+import { SoundObjectPool } from "./SoundObjectPool";
 
 interface ButtonProps {
     textImg: phaser.GameObjects.Text;
@@ -40,6 +41,7 @@ export class Button {
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         this.bgImg.on("pointerdown", (_pointer: phaser.Input.Pointer, _target: phaser.GameObjects.Image[]) => {
+            SoundObjectPool.instance.getButtonClick().play();
             currentScene.input.setDefaultCursor("");
             buttonData.onClick();
         });
@@ -48,6 +50,7 @@ export class Button {
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         this.bgImg.on("pointerover", (_pointer: phaser.Input.Pointer, _target: phaser.GameObjects.Image[]) => {
+            SoundObjectPool.instance.getButtonHover().play();
             currentScene.input.setDefaultCursor("pointer");
             this.bgImg.setTexture("menu_button_hover");
         });

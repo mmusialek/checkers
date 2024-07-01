@@ -10,6 +10,7 @@ import { GameContext } from "../common/GameContex";
 import { GameBoardConst } from "./GameBoardConst";
 import { getAnimatonName, getPlayerType } from "./GameMasterUtils";
 import { getNewSprite } from "../common/ObjectFatory";
+import { SoundObjectPool } from "./SoundObjectPool";
 
 
 interface GameSquereHandlersProps {
@@ -157,6 +158,7 @@ export class GameSquere {
         targetSquere.addPawn(tmp!);
         targetSquere._pawn?.move(targetSquere.wordPosition);
         tmp!.setParent(targetSquere);
+        SoundObjectPool.instance.getPawnSound().play();
     }
 
     destroy() {

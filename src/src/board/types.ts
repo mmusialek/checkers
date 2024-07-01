@@ -88,6 +88,19 @@ export enum GameOverType {
     NoMoves
 }
 
+
+//
+// audio
+//
+
+export enum PawnAudioTypes {
+    pawnMove0001 = "pawn_move_0001",
+    pawnMove0002 = "pawn_move_0002",
+    pawnMove0003 = "pawn_move_0003",
+    pawnMove0004 = "pawn_move_0004",
+    pawnMove0005 = "pawn_move_0005",
+}
+
 //
 // interfaces
 //

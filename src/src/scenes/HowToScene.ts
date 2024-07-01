@@ -12,12 +12,15 @@ export class HowToSceneScene extends phaser.Scene {
     }
 
     async preload(): Promise<void> {
-        this.load.image('menu_button', 'assets/menu/button.png');
-        this.load.image('menu_button_hover', 'assets/menu/button_hover.png');
+        this.load.image('menu_button', 'assets/menu/sprites/button.png');
+        this.load.image('menu_button_hover', 'assets/menu/sprites/button_hover.png');
+        
+        this.load.audio("button_highlight", "assets/menu/audio/button_highlight.mp3");
+        this.load.audio("button_click", "assets/menu/audio/button_click.mp3");
     }
 
     create() {
-        this.cameras.main.setBackgroundColor("302220");
+        this.cameras.main.setBackgroundColor(FontsConst.boardColor);
         this.createParagraphs();
     }
 

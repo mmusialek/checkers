@@ -130,7 +130,7 @@ export class GameBoard implements IGameLoopObject {
     const rect = GameContext.instance.currentScene.add.rectangle(0, 100, window.outerWidth, window.outerHeight - 100, 255, .1).setOrigin(0, 0);
     const winnerSprite = getNewSprite({ x: x, y: y }, getWinnerDialog(this._turnManager.currentTurn));
 
-    const btn = Button.new({ x: winnerSprite.x, y: winnerSprite.y + (winnerSprite.height / 2) + 15 }, "New Game x", () => {
+    const btn = Button.new({ x: winnerSprite.x, y: winnerSprite.y + (winnerSprite.height / 2) + 15 }, "New Game", () => {
       this.initializeBoard();
       winnerSprite.destroy(true);
       rect.destroy(true);
