@@ -37,6 +37,7 @@ export class GameBoard implements IGameLoopObject {
   private readonly _boardStats: BoardStats;
 
   private _loadGame: boolean = false;
+  private _players: number = 1;
 
   constructor() {
     this._turnManager = new TurnManager();
@@ -51,9 +52,19 @@ export class GameBoard implements IGameLoopObject {
   // loop methods
 
   init(data?: object): void {
-    if (data && Object.keys(data).length > 0)
+    if (data && Object.keys(data).length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this._loadGame = (data as any).loadGame;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this._players = (data as any).players;
+
+      if (![1, 2].includes(this._players)) {
+        this._players = 1
+      }
+
+      this._gameMaster.setPlayers(this._players);
+    }
   }
 
   create(): void {
@@ -74,7 +85,7 @@ export class GameBoard implements IGameLoopObject {
 
     startX += 150 + 25;
     Button.new({ x: startX, y: startY }, "Save", () => {
-      saveData(this._turnManager, this._gameMaster, this._gameBoard);
+      saveData(this._turnManager, this._gameMaster, this._gameBoard, this._players);
     });
 
     startX += 150 + 25;
@@ -118,11 +129,12 @@ export class GameBoard implements IGameLoopObject {
     const y = (this._gameBoardSprite!.height / 2) + GameBoardConst.boardYOffset;
     const rect = GameContext.instance.currentScene.add.rectangle(0, 100, window.outerWidth, window.outerHeight - 100, 255, .1).setOrigin(0, 0);
     const winnerSprite = getNewSprite({ x: x, y: y }, getWinnerDialog(this._turnManager.currentTurn));
-    const btn = Button.new({ x: winnerSprite.x, y: winnerSprite.y + (winnerSprite.height / 2) + 15 }, "New Game", () => {
+
+    const btn = Button.new({ x: winnerSprite.x, y: winnerSprite.y + (winnerSprite.height / 2) + 15 }, "New Game x", () => {
       this.initializeBoard();
-      winnerSprite.destroy();
-      btn.destroy();
-      rect.destroy();
+      winnerSprite.destroy(true);
+      rect.destroy(true);
+      setTimeout(() => { btn.destroy(); }, 1);
     });
   }
 
@@ -167,7 +179,7 @@ export class GameBoard implements IGameLoopObject {
     }
 
     if (this._gameBoardSprite) {
-      this._gameBoardSprite.destroy();
+      this._gameBoardSprite.destroy(true);
       this._gameBoardSprite = null;
     }
 
@@ -237,6 +249,7 @@ export class GameBoard implements IGameLoopObject {
   }
 
   placePawn(target: GameSquere) {
+    let isTurnFinished = false;
     if (!this._gameMaster.selectedSquere) return;
 
     this._gameMaster.moveSelectedPawn(target);
@@ -246,10 +259,15 @@ export class GameBoard implements IGameLoopObject {
 
     if (!this._gameMaster.checkAnyMovementLeft(target)) {
       this._gameMaster.finishTurn();
+      isTurnFinished = true;
     }
 
     this._boardStats.updateTurn(this._turnManager.currentTurn);
     this._boardStats.updateScore(this._gameMaster.getBoard());
+
+    if (isTurnFinished && this._gameMaster.isComputerTurn) {
+      this._gameMaster.makeComputerMove();
+    }
   }
 
 }

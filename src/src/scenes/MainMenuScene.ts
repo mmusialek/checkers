@@ -44,12 +44,12 @@ export class MainMenuScene extends phaser.Scene {
         }
 
         Button.new({ x: 100, y: startY }, "1 player", () => {
-            GameContext.instance.setScene(SceneConst.GameBoardScene, {});
+            GameContext.instance.setScene(SceneConst.GameBoardScene, { players: 1 });
         });
 
         startY += 60;
         Button.new({ x: 100, y: startY }, "2 players", () => {
-            GameContext.instance.setScene(SceneConst.GameBoardScene, {});
+            GameContext.instance.setScene(SceneConst.GameBoardScene, { players: 2 });
         });
     }
 }

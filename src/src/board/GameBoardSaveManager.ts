@@ -30,7 +30,7 @@ export const loadData = (gameBoard: GameBoard, turnManager: TurnManager, gameMas
     boardStats.updateTurn(turnManager.currentTurn);
 }
 
-export const saveData = (turnManager: TurnManager, gameMaster: GameMaster, gameBoard: GameSquere[][]): void => {
+export const saveData = (turnManager: TurnManager, gameMaster: GameMaster, gameBoard: GameSquere[][], players: number): void => {
     const flatListToSave: GameSquereSave[] = [];
 
     for (let row = 0; row < GameBoardConst.numRows; row++) {
@@ -44,6 +44,7 @@ export const saveData = (turnManager: TurnManager, gameMaster: GameMaster, gameB
 
     const { black: blackScore, white: whiteScore } = gameMaster.scoreboard.getBoard();
     saveGame({
+        players: players,
         board: flatListToSave,
         currentTurn: turnManager.currentTurn,
         score: { white: whiteScore, black: blackScore }

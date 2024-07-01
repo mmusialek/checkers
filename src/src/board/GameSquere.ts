@@ -160,7 +160,7 @@ export class GameSquere {
     }
 
     destroy() {
-        this._rectangle.destroy();
+        this._rectangle.destroy(true);
         this._effect?.destroy();
         this.pawn?.destroy();
     }
@@ -337,7 +337,7 @@ export class Pawn {
 
     private clearImage() {
         this.setPawnType(GamePawnType.none);
-        this._sprite?.destroy();
+        this._sprite?.destroy(true);
         this._sprite = null;
     }
 

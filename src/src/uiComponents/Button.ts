@@ -27,8 +27,8 @@ export class Button {
     }
 
     destroy() {
-        this.textImg.destroy();
-        this.bgImg.destroy();
+        this.bgImg.destroy(true);
+        this.textImg.destroy(true);
     }
 
     private setData(buttonData: ButtonProps) {

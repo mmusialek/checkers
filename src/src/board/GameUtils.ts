@@ -29,3 +29,9 @@ export const getOppositeDirection = (pointA: Point, pointB: Point): Point => {
 export const addPointToPoint = (point: Point, value: Point): Point => {
     return { x: point.x + value.x, y: point.y + value.y }
 }
+
+export const getRandomInt = (min: number, max: number): number => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
