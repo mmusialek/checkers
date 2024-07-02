@@ -118,6 +118,7 @@ export interface IGameLoopObject {
 
 
 export interface SuggestionData {
+    deep: number;
     effect: GamePawnType;
     moveType: MovementType;
     gameSquere: GameSquere;

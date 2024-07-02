@@ -11,6 +11,7 @@ export interface GameSquereSave {
 }
 
 export interface GameSaveObject {
+    selectedSquere?: string;
     players: number;
     board: GameSquereSave[];
     currentTurn: PlayerType;

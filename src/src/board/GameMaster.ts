@@ -32,6 +32,10 @@ export class GameMaster {
         return this._selectedSquere;
     }
 
+    set selectedSquere(square: GameSquere | null) {
+        this._selectedSquere = square;
+    }
+
     get scoreboard(): ScoreBoard {
         return this._scoreBoard;
     }
@@ -171,38 +175,55 @@ export class GameMaster {
     async makeComputerMove() {
 
         const suggestionsForEachPawn: { startingSquere: GameSquere, suggestions: SuggestionData[] }[] = [];
+        const canAssignSelectedSquere = !this._selectedSquere && !this._currentCaptures.length;
 
         // generate all possible suggestions
 
         const currentPlayerSqueres: GameSquere[] = [];
-        for (let row = 0; row < GameBoardConst.numRows; row++) {
-            for (let col = 0; col < GameBoardConst.numCols; col++) {
-                const gameSquere = this._gameBoard[row][col];
-                if (gameSquere.playerType === this._turnManager.currentTurn)
-                    currentPlayerSqueres.push(gameSquere);
+        if (canAssignSelectedSquere) {
+            for (let row = 0; row < GameBoardConst.numRows; row++) {
+                for (let col = 0; col < GameBoardConst.numCols; col++) {
+                    const gameSquere = this._gameBoard[row][col];
+                    if (gameSquere.playerType === this._turnManager.currentTurn)
+                        currentPlayerSqueres.push(gameSquere);
+                }
+            }
+
+            for (let i = 0; i < currentPlayerSqueres.length; i++) {
+                this._selectedSquere = currentPlayerSqueres[i];
+                const suggestions = this.getSuggestions(currentPlayerSqueres[i]);
+                suggestionsForEachPawn.push({
+                    startingSquere: currentPlayerSqueres[i],
+                    suggestions
+                });
             }
         }
-
-        for (let i = 0; i < currentPlayerSqueres.length; i++) {
-            this._selectedSquere = currentPlayerSqueres[i];
-            const suggestions = this.getSuggestions(currentPlayerSqueres[i]);
+        else {
+            const suggestions = this.getSuggestions(this._selectedSquere!);
             suggestionsForEachPawn.push({
-                startingSquere: currentPlayerSqueres[i],
+                startingSquere: this._selectedSquere!,
                 suggestions
             });
         }
 
         // pick suggestion
 
-        this._selectedSquere = null;
+        if (canAssignSelectedSquere) {
+            this._selectedSquere = null;
+        }
+
         let target: GameSquere | null = null;
         const suggestedNormalMoves: { startingSquere: GameSquere, suggestions: SuggestionData[] }[] = [];
 
         for (const item of suggestionsForEachPawn) {
-            const captureMove = item.suggestions.find(q => q.moveType === MovementType.CaptureAfterEnemy);
+            const captureMoves = item.suggestions.filter(q => q.moveType === MovementType.CaptureAfterEnemy);
+            this.correctCurrentMoves(captureMoves);
+            const captureMove = captureMoves[getRandomInt(0, captureMoves.length - 1)];
             if (captureMove) {
                 target = captureMove.gameSquere;
-                this._selectedSquere = item.startingSquere;
+                if (canAssignSelectedSquere) {
+                    this._selectedSquere = item.startingSquere;
+                }
                 this._suggestedFields = item.suggestions;
                 break;
             }
@@ -214,9 +235,8 @@ export class GameMaster {
         }
 
         if (!target && suggestedNormalMoves.length) {
-            // const normalMoves = suggestionsForEachPawn.flatMap(q => q.suggestions.flatMap(w => w)).filter(q => q.moveType === MovementType.Normal);
-            // const move = normalMoves[getRandomInt(0, normalMoves.length - 1)];
             const move = suggestedNormalMoves[getRandomInt(0, suggestedNormalMoves.length - 1)];
+            this.correctCurrentMoves(move.suggestions);
             this._selectedSquere = move.startingSquere;
             target = move.suggestions[getRandomInt(0, move.suggestions.length - 1)].gameSquere;
             this._suggestedFields = move.suggestions;
@@ -339,21 +359,40 @@ export class GameMaster {
         const otherHasCaptureMove = captureInfo.other.some(q => q.moveType === MovementType.CaptureAfterEnemy);
         const currentHasCaptureMove = captureInfo.currentSquere.some(q => q.moveType === MovementType.CaptureAfterEnemy);
 
+        // // dont allow to move to the fields which will available in next move (deep == 2 means next move)
+        this.correctCurrentMoves(captureInfo.currentSquere);
+
         if (otherHasCaptureMove && !currentHasCaptureMove) {
             for (const suggestedFieldItem of suggestedFields) {
                 suggestedFieldItem.moveType = MovementType.Unavailable;
                 suggestedFieldItem.effect = GamePawnType.notAllowed;
             }
-        } else if (currentHasCaptureMove) {
-            const toChange = suggestedFields.filter(q => q.moveType === MovementType.Normal);
-            for (const item of toChange) {
-                item.effect = GamePawnType.notAllowed;
-            }
         }
+
 
         this._suggestedFields = suggestedFields;
 
         return captureInfo;
+    }
+
+    private correctCurrentMoves(suggestions: SuggestionData[]) {
+        // dont allow to move to the fields which will available in next move (deep == 2 means next move)
+        const notAllowedMovesFromNextMoves = [MovementType.Normal, MovementType.AlreadyCaptured, MovementType.CaptureAfterEnemy];
+        for (const item of suggestions) {
+            if (item.deep > 2 && notAllowedMovesFromNextMoves.includes(item.moveType)) {
+                item.moveType = MovementType.Unavailable;
+                item.effect = GamePawnType.notAllowed;
+            }
+        }
+
+        const currentHasCaptureMove = suggestions.some(q => q.moveType === MovementType.CaptureAfterEnemy);
+
+        if (currentHasCaptureMove) {
+            const toChange = suggestions.filter(q => q.moveType === MovementType.Normal);
+            for (const item of toChange) {
+                item.effect = GamePawnType.notAllowed;
+            }
+        }
     }
 
     private getSuggestions(startingSquere: GameSquere): SuggestionData[] {
@@ -387,8 +426,9 @@ export class GameMaster {
         let range = 1;
 
 
-        const createAvailableMove = (targetGameSquere: GameSquere, effect: GamePawnType, moveType: MovementType, playerType: PlayerType) => {
+        const createAvailableMove = (targetGameSquere: GameSquere, effect: GamePawnType, moveType: MovementType, playerType: PlayerType, deep: number) => {
             const tmp: SuggestionData = {
+                deep,
                 gameSquere: targetGameSquere,
                 effect: effect,
                 moveType: moveType,
@@ -402,6 +442,8 @@ export class GameMaster {
         for (const directionMoveItem of initialMoveRange) {
             range = 1;
             canProcess = true;
+            let inRowCaptures = 0;
+            const maxInRowCaptures = 1;
 
             while (canProcess) {
                 const pointToAdd: Point = { x: (directionMoveItem.x * range), y: (directionMoveItem.y * range) }
@@ -418,7 +460,7 @@ export class GameMaster {
 
 
                 // cann't jump over 2 enemies
-                if (deep > 1 && startingSquere.playerType === this._turnManager.opponentType && targetGameSquere.playerType) {
+                if (startingSquere.playerType === this._turnManager.opponentType && targetGameSquere.playerType === this._turnManager.opponentType) {
                     canProcess = false;
                     break;
                 }
@@ -436,20 +478,28 @@ export class GameMaster {
                             if (lastSuggestion?.moveType === MovementType.CaptureAfterEnemy)
                                 break;
                         }
-                        availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.shadow, moveType, playerType));
+                        availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.shadow, moveType, playerType, deep));
                         break;
 
                     case MovementType.CaptureOnEnemy:
                     case MovementType.AlreadyCaptured: {
-                        availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.notAllowed, moveType, playerType));
+                        inRowCaptures++;
+                        availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.notAllowed, moveType, playerType, deep));
                         const childRes = this.checkSquereSuggestion(initialSquere, targetGameSquere, [directionMoveItem], nextDeep);
+
+                        // cann't jump over 2 enemies
+                        if (inRowCaptures > maxInRowCaptures) {
+                            canProcess = false;
+                            break;
+                        }
+
                         availableMoves.push(...childRes);
                     }
                         break;
 
                     case MovementType.CaptureAfterEnemy:
                         {
-                            availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.shadow, moveType, playerType));
+                            availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.shadow, moveType, playerType, deep));
 
                             if (isPawn(initialSquere.pawnType)) {
                                 const newDirectionArray = directionArray.filter(q => q.x !== directionMoveItem.x * -1 || q.y !== directionMoveItem.y * -1);
@@ -461,7 +511,7 @@ export class GameMaster {
 
                     case MovementType.Unavailable:
                     default:
-                        availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.notAllowed, moveType, playerType));
+                        availableMoves.push(createAvailableMove(targetGameSquere, GamePawnType.notAllowed, moveType, playerType, deep));
                         break;
                 }
 

@@ -15,6 +15,11 @@ import { GamePawnType } from "./types";
 export const loadData = (gameBoard: GameBoard, turnManager: TurnManager, gameMaster: GameMaster, boardStats: BoardStats, gameBoardSqueres: GameSquere[][], data: GameSaveObject): void => {
     gameMaster.scoreboard.loadData(data.score);
     turnManager.loadData(data.currentTurn);
+    gameBoard.setPlayers(data.players);
+    boardStats.setPlayers(data.players);
+    if (data.selectedSquere) {
+        gameMaster.selectedSquere = gameBoardSqueres.flatMap(q => q).find(q => q.name === data.selectedSquere) || null;
+    }
 
     for (let i = 0; i < data.board.length; i++) {
         const { pawnType, position } = data.board[i];
@@ -44,6 +49,7 @@ export const saveData = (turnManager: TurnManager, gameMaster: GameMaster, gameB
 
     const { black: blackScore, white: whiteScore } = gameMaster.scoreboard.getBoard();
     saveGame({
+        selectedSquere: gameMaster.selectedSquere?.name,
         players: players,
         board: flatListToSave,
         currentTurn: turnManager.currentTurn,

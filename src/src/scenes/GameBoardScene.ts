@@ -38,7 +38,7 @@ export class GameBoardScene extends phaser.Scene {
         this.load.image("menu_button_hover", "assets/menu/sprites/button_hover.png");
         this.load.image("menu_button", "assets/menu/sprites/button.png");
 
-        this.load.audio("button_highlight", "assets/menu/audio/button_highlight.mp3");
+        this.load.audio("button_highlight", "assets/menu/audio/button_highlight_0003.mp3");
         this.load.audio("button_click", "assets/menu/audio/button_click.mp3");
 
         this.load.audio('pawn_move_0001', ['assets/board/audio/pawn_move_0001.mp3']);

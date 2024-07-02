@@ -11,10 +11,17 @@ export class BoardStats implements IGameLoopObject {
     private scoreBlackTextImg!: phaser.GameObjects.Text;
 
     private blackPawn!: phaser.GameObjects.Sprite;
+    private blackPawnText!: phaser.GameObjects.Text;
     private whitePawn!: phaser.GameObjects.Sprite;
+    private whitePawnText!: phaser.GameObjects.Text;
+    private players: number = 2;
 
     create(): void {
         this.initStats();
+    }
+
+    setPlayers(playerCount: number) {
+        this.players = playerCount;
     }
 
     clear() {
@@ -25,10 +32,14 @@ export class BoardStats implements IGameLoopObject {
     updateTurn(pawnTurn: PlayerType) {
         if (pawnTurn === PlayerType.white) {
             this.whitePawn.setAlpha(1);
+            this.whitePawnText.setAlpha(1);
             this.blackPawn.setAlpha(.2);
+            this.blackPawnText.setAlpha(.2);
         } else {
             this.blackPawn.setAlpha(1);
+            this.blackPawnText.setAlpha(1);
             this.whitePawn.setAlpha(.2);
+            this.whitePawnText.setAlpha(.2);
         }
     }
 
@@ -42,23 +53,35 @@ export class BoardStats implements IGameLoopObject {
     private initStats() {
         const statStyle = { fontFamily: FontsConst.secondaryFontFamily, color: FontsConst.primaryColor, fontSize: 20 };
 
+        // eslint-disable-next-line prefer-const
         let { x: startX, y: startY } = getBoardPos(9, 0);
+        let startXTmp = startX;
+        let startYTmp = startY;
 
-        this.blackPawn = getNewSprite({ x: startX, y: startY }, GamePawnType.blackPawn);
-
-        startX += 50;
         const turnText = "turn";
-        this.turnImg = getNewText({ x: startX, y: startY }, turnText || "x", statStyle).setOrigin(0, 0);
+        this.turnImg = getNewText({ x: startXTmp, y: startY }, turnText || "x", statStyle);
 
-        startX += 90;
-        this.whitePawn = getNewSprite({ x: startX, y: startY }, GamePawnType.whitePawn);
+        startXTmp = startX;
+        startY += (this.turnImg.height / 2) + 50;
+        this.blackPawn = getNewSprite({ x: startXTmp, y: startY }, GamePawnType.blackPawn);
+        let startPawnXLabel = startXTmp + (this.blackPawn.width) + 50;
+        this.blackPawnText = getNewText({ x: startPawnXLabel, y: startY }, this.players === 2 ? "Player 2" : "CPU", statStyle);
 
+        startY += (this.turnImg.height / 2) + 50;
+        this.whitePawn = getNewSprite({ x: startXTmp, y: startY }, GamePawnType.whitePawn);
+        this.whitePawnText = getNewText({ x: startPawnXLabel, y: startY }, "Player 1", statStyle);
+
+
+
+        startXTmp += (this.turnImg.width / 2) + 50;
+        startPawnXLabel += this.whitePawnText.width + 50;
         const scoreText = "score";
-        startY += this.turnImg.height + 50;
-        this.scoreTextImg = getNewText({ x: this.turnImg.x, y: startY }, scoreText, statStyle).setOrigin(0, 0);
+        this.scoreTextImg = getNewText({ x: startPawnXLabel, y: startYTmp }, scoreText, statStyle);
 
-        this.scoreBlackTextImg = getNewText({ x: this.blackPawn.x, y: this.scoreTextImg.y }, "0", statStyle).setOrigin(0, 0);
-        this.scoreWhiteTextImg = getNewText({ x: this.whitePawn.x, y: this.scoreTextImg.y }, "0", statStyle).setOrigin(0, 0);
+        startYTmp += (this.scoreTextImg.height / 2) + 50;
+        this.scoreBlackTextImg = getNewText({ x: startPawnXLabel, y: startYTmp }, "0", statStyle);
+        startYTmp += (this.scoreTextImg.height / 2) + 50;
+        this.scoreWhiteTextImg = getNewText({ x: startPawnXLabel, y: startYTmp }, "0", statStyle);
 
     }
 }

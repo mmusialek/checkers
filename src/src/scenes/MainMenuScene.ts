@@ -15,7 +15,7 @@ export class MainMenuScene extends phaser.Scene {
     async preload(): Promise<void> {
         this.load.image('menu_button', 'assets/menu/sprites/button.png');
         this.load.image('menu_button_hover', 'assets/menu/sprites/button_hover.png');
-        this.load.audio("button_highlight", "assets/menu/audio/button_highlight.mp3");
+        this.load.audio("button_highlight", "assets/menu/audio/button_highlight_0003.mp3");
         this.load.audio("button_click", "assets/menu/audio/button_click.mp3");
 
         this.load.image('main_menu_board_piece', 'assets/menu/sprites/main_menu_board_piece.png');

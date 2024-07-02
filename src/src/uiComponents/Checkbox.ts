@@ -1,6 +1,7 @@
 import phaser from "phaser";
 import { GameContext } from "../common/GameContex";
 import { Point } from "../common/type";
+import { FontsConst } from "../common/FontsConts";
 
 interface CheckboxProps {
     textImg: phaser.GameObjects.Text;
@@ -18,7 +19,7 @@ export class Checkbox {
 
     static new(position: Point, label: string, onClickHandler: (checked: boolean) => void) {
         const sceneAdd = GameContext.instance.currentScene.add;
-        const textImg = sceneAdd.text(position.x, position.y, "").setOrigin(.5, .5);
+        const textImg = sceneAdd.text(position.x, position.y, "", { fontFamily: FontsConst.secondaryFontFamily, fontSize: 15 }).setOrigin(.5, .5);
         const bgImg = sceneAdd.image(position.x, position.y, "menu_button");
 
         const tmp = new Checkbox();

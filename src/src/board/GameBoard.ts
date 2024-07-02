@@ -60,9 +60,10 @@ export class GameBoard implements IGameLoopObject {
       this._players = (data as any).players;
 
       if (![1, 2].includes(this._players)) {
-        this._players = 1
+        this.setPlayers(1);
       }
 
+      this._boardStats.setPlayers(this._players);
       this._gameMaster.setPlayers(this._players);
     }
   }
@@ -95,8 +96,9 @@ export class GameBoard implements IGameLoopObject {
 
 
     if (GameContext.instance.debug) {
+      let startX = 100;
       Checkbox.new(
-        { x: 100, y: 700 },
+        { x: startX, y: 800 },
         "no TM",
         (checked: boolean) => {
           if (!GameContext.instance.debugSettings) return;
@@ -109,17 +111,69 @@ export class GameBoard implements IGameLoopObject {
         }
       );
 
+      startX += 170;
       Button.new(
-        { x: 240, y: 700 },
+        { x: startX, y: 800 },
         "next turn",
         () => {
           this._turnManager.finishTurn();
           this._boardStats.updateTurn(this._turnManager.currentTurn);
         }
       );
+
+      startX += 170;
+      Button.new(
+        { x: startX, y: 800 },
+        "PC move",
+        async () => {
+          await this._gameMaster.makeComputerMove();
+        }
+      );
     }
 
     eventsCenter.on(EventTypes.gameOver, () => { this.showGameOver() });
+  }
+
+  setPlayers(playerCount: number) {
+    this._players = playerCount;
+  }
+
+  //
+  // pawn actions
+  //
+
+  selectPawn(target: GameSquere) {
+    if (this._gameMaster.selectedSquere) {
+      const isTheSame = this._gameMaster.isSelectedSquereEqual(target);
+      this._gameMaster.clearSelectedPawn();
+      this._gameMaster.clearSuggestions();
+
+      if (!isTheSame) this._gameMaster.setSelectedPawn(target);
+    } else {
+      this._gameMaster.setSelectedPawn(target);
+    }
+  }
+
+  placePawn(target: GameSquere) {
+    let isTurnFinished = false;
+    if (!this._gameMaster.selectedSquere) return;
+
+    this._gameMaster.moveSelectedPawn(target);
+
+
+    this._gameMaster.processMovement(target);
+
+    if (!this._gameMaster.checkAnyMovementLeft(target)) {
+      this._gameMaster.finishTurn();
+      isTurnFinished = true;
+    }
+
+    this._boardStats.updateTurn(this._turnManager.currentTurn);
+    this._boardStats.updateScore(this._gameMaster.getBoard());
+
+    if (isTurnFinished && this._gameMaster.isComputerTurn) {
+      this._gameMaster.makeComputerMove();
+    }
   }
 
   // helper methods
@@ -229,44 +283,6 @@ export class GameBoard implements IGameLoopObject {
           gameSquere.addPawn(pawnToAdd);
         }
       }
-    }
-  }
-
-  //
-  // pawn actions
-  //
-
-  selectPawn(target: GameSquere) {
-    if (this._gameMaster.selectedSquere) {
-      const isTheSame = this._gameMaster.isSelectedSquereEqual(target);
-      this._gameMaster.clearSelectedPawn();
-      this._gameMaster.clearSuggestions();
-
-      if (!isTheSame) this._gameMaster.setSelectedPawn(target);
-    } else {
-      this._gameMaster.setSelectedPawn(target);
-    }
-  }
-
-  placePawn(target: GameSquere) {
-    let isTurnFinished = false;
-    if (!this._gameMaster.selectedSquere) return;
-
-    this._gameMaster.moveSelectedPawn(target);
-
-
-    this._gameMaster.processMovement(target);
-
-    if (!this._gameMaster.checkAnyMovementLeft(target)) {
-      this._gameMaster.finishTurn();
-      isTurnFinished = true;
-    }
-
-    this._boardStats.updateTurn(this._turnManager.currentTurn);
-    this._boardStats.updateScore(this._gameMaster.getBoard());
-
-    if (isTurnFinished && this._gameMaster.isComputerTurn) {
-      this._gameMaster.makeComputerMove();
     }
   }
 
