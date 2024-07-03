@@ -1,23 +1,27 @@
-name: Build
+name: Build & Deploy
 
 on:
-  push:
-    tags: 
-      - "release/v_*"
+    push:
+        tags:
+            - "release/v_*"
 
 jobs:
-    build:
+    deploy:
         # runs-on: ubuntu-latest
         runs-on: self-hosted
 
+        permissions:
+            pages: write
+            id-token: write
+
         steps:
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Set up Node.js
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 22
 
             - name: Install pnpm
               uses: pnpm/action-setup@v4
