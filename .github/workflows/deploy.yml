@@ -50,7 +50,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: checkers-artifacts
-                  path: dist
+                  path: src/dist
 
     deploy:
         needs: [build, upload-artefacts]
