@@ -50,10 +50,10 @@ jobs:
               uses: actions/configure-pages@v5
 
             - name: Archive release assets
-              uses: actions/upload-pages-artifact@v1
-              # with:
-              #     name: github-pages
-                  # path: ./_site
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  #     name: github-pages
+                  path: .
 
     deploy:
         needs: [build, upload-artefacts]
