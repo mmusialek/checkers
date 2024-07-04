@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:prod": "tsc && vite build --outDir ../_site",
     "preview": "vite preview",
     "lint": "eslint eslint.config.js"
   },

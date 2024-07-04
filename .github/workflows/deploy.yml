@@ -38,7 +38,7 @@ jobs:
 
             - name: Build Vite app
               working-directory: src
-              run: pnpm run build
+              run: pnpm run build:prod
 
     upload-artefacts:
         needs: build
@@ -56,7 +56,7 @@ jobs:
               uses: actions/upload-pages-artifact@v3
               with:
                   name: github-pages
-                  path: ./src/dist
+                  # path: ./src/dist
 
     deploy:
         needs: [build, upload-artefacts]
