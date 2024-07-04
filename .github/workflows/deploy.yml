@@ -10,17 +10,13 @@ on:
             - main
 
 jobs:
-    deploy:
+    build:
         # runs-on: ubuntu-latest
         runs-on: self-hosted
 
-        permissions:
-            pages: write
-            id-token: write
-
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
@@ -44,6 +40,18 @@ jobs:
               working-directory: src
               run: pnpm run build
 
+    deploy:
+        needs: build
+
+        # runs-on: ubuntu-latest
+        runs-on: self-hosted
+
+        permissions:
+            contents: read
+            pages: write
+            id-token: write
+
+        steps:
             - name: Deploy to GitHub Pages
               uses: actions/deploy-pages@v4
               with:
