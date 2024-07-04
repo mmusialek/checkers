@@ -46,11 +46,11 @@ jobs:
         runs-on: self-hosted
 
         steps:
+            - name: Setup Pages
+              uses: actions/configure-pages@v5
+
             - name: Archive release assets
-              uses: actions/upload-artifact@v4
-              with:
-                  name: checkers-artifacts
-                  path: src/dist
+              uses: actions/upload-pages-artifact@v3
 
     deploy:
         needs: [build, upload-artefacts]
@@ -72,5 +72,4 @@ jobs:
               uses: actions/deploy-pages@v4
               id: deployment
               with:
-                  artifact_name: checkers-artifacts
                   token: ${{ secrets.GITHUB_TOKEN }}
