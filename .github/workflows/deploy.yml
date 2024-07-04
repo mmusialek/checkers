@@ -56,7 +56,7 @@ jobs:
               uses: actions/upload-pages-artifact@v3
               with:
                   name: github-pages
-                  path: src/dist
+                  path: dist
 
     deploy:
         needs: [build, upload-artefacts]
