@@ -54,9 +54,9 @@ jobs:
 
             - name: Archive release assets
               uses: actions/upload-pages-artifact@v3
-              with:
-                  name: github-pages
-                  path: ./_site
+              # with:
+              #     name: github-pages
+                  # path: ./_site
 
     deploy:
         needs: [build, upload-artefacts]
