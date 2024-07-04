@@ -11,8 +11,8 @@ on:
 
 jobs:
     build:
-        # runs-on: ubuntu-latest
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
+        # runs-on: self-hosted
 
         steps:
             - name: Checkout
@@ -42,8 +42,8 @@ jobs:
 
     upload-artefacts:
         needs: build
-        # runs-on: ubuntu-latest
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
+        # runs-on: self-hosted
 
         steps:
             - name: Setup Pages
@@ -61,8 +61,8 @@ jobs:
     deploy:
         needs: [build, upload-artefacts]
 
-        # runs-on: ubuntu-latest
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
+        # runs-on: self-hosted
 
         environment:
             name: github-pages
