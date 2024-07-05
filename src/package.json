@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:prod": "tsc && vite build --base=\"/checkers/\" --outDir ../_site",
+    "build:prod": "tsc && vite build",
+    "build:prod2": "tsc && vite build --base=\"/checkers/\" --outDir ../_site -publicDir",
     "preview": "vite preview",
     "lint": "eslint eslint.config.js"
   },
@@ -17,7 +18,8 @@
     "phaser3-rex-plugins-types": "^0.2.0",
     "typescript": "^5.5.2",
     "typescript-eslint": "^7.14.1",
-    "vite": "^5.3.2"
+    "vite": "^5.3.2",
+    "vite-plugin-static-copy": "^1.0.6"
   },
   "dependencies": {
     "phaser": "^3.80.1"
