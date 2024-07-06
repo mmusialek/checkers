@@ -17,6 +17,7 @@ export const loadData = (gameBoard: GameBoard, turnManager: TurnManager, gameMas
     turnManager.loadData(data.currentTurn);
     gameBoard.setPlayers(data.players);
     boardStats.setPlayers(data.players);
+    gameMaster.setPlayers(data.players);
     if (data.selectedSquere) {
         gameMaster.selectedSquere = gameBoardSqueres.flatMap(q => q).find(q => q.name === data.selectedSquere) || null;
     }

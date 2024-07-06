@@ -220,6 +220,7 @@ export class GameBoard implements IGameLoopObject {
         data
       );
     }
+    this._boardStats.updateNames();
   };
 
   private drawBoard() {

@@ -1,16 +1,11 @@
 @font-face {
     font-family: "8-bit-pusab";
-    src: url("/assets/fonts/8-bit-pusab_18.ttf") format("ttf");
+    src: url("./assets/fonts/8-bit-pusab_18.ttf") format("ttf");
 }
 
 @font-face {
     font-family: "Videotype";
-    src: url("/assets/fonts/videotype_34.ttf") format("ttf");
-}
-
-@font-face {
-    font-family: "TECHKR";
-    src: url("/assets/fonts/techkr_24.ttf") format("ttf");
+    src: url("./assets/fonts/videotype_34.ttf") format("ttf");
 }
 
 html,

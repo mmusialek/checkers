@@ -216,8 +216,8 @@ export class GameMaster {
         const suggestedNormalMoves: { startingSquere: GameSquere, suggestions: SuggestionData[] }[] = [];
 
         for (const item of suggestionsForEachPawn) {
+            this.correctCurrentMoves(item.suggestions);
             const captureMoves = item.suggestions.filter(q => q.moveType === MovementType.CaptureAfterEnemy);
-            this.correctCurrentMoves(captureMoves);
             const captureMove = captureMoves[getRandomInt(0, captureMoves.length - 1)];
             if (captureMove) {
                 target = captureMove.gameSquere;
@@ -236,7 +236,7 @@ export class GameMaster {
 
         if (!target && suggestedNormalMoves.length) {
             const move = suggestedNormalMoves[getRandomInt(0, suggestedNormalMoves.length - 1)];
-            this.correctCurrentMoves(move.suggestions);
+            // this.correctCurrentMoves(move.suggestions);
             this._selectedSquere = move.startingSquere;
             target = move.suggestions[getRandomInt(0, move.suggestions.length - 1)].gameSquere;
             this._suggestedFields = move.suggestions;
