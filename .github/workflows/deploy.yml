@@ -43,24 +43,8 @@ jobs:
             - name: Archive release assets
               uses: actions/upload-pages-artifact@v3
 
-    # upload-artefacts:
-    #     needs: build
-    #     runs-on: ubuntu-latest
-    #     # runs-on: self-hosted
-
-    #     steps:
-    #         - name: Setup Pages
-    #           uses: actions/configure-pages@v5
-
-    #         - name: Archive release assets
-    #           uses: actions/upload-pages-artifact@v3
-    #           # with:
-    #           #     name: github-pages
-    #           # path: .
-
     deploy:
         needs: [build]
-        # needs: [build, upload-artefacts]
 
         runs-on: ubuntu-latest
         # runs-on: self-hosted
