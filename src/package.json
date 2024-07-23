@@ -1,7 +1,7 @@
 {
   "name": "checkers",
   "private": true,
-  "author": "Marcin Musiałek",
+  "author": "LIFO Code",
   "license": "MIT",
   "version": "0.0.9",
   "type": "module",
