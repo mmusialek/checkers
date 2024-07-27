@@ -1,0 +1,16 @@
+{
+  "name": "la-checkers-2d",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "author": "LIFO Code",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^31.3.0"
+  }
+}
