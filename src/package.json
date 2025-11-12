@@ -20,8 +20,8 @@
     "phaser3-rex-plugins-types": "^0.2.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.1",
-    "vite": "^6.3.5",
-    "vite-plugin-static-copy": "^3.0.2"
+    "vite": "^6.3.6",
+    "vite-plugin-static-copy": "^3.1.2"
   },
   "dependencies": {
     "phaser": "^3.90.0"
