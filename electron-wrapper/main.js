@@ -15,6 +15,7 @@ function createWindow() {
 
     mainWindow.removeMenu();
     mainWindow.loadFile(path.join(__dirname, "_site", "index.html"));
+    mainWindow.webContents.openDevTools()
 }
 
 app.on("ready", createWindow);
