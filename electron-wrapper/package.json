@@ -28,7 +28,10 @@
   },
   "pnpm": {
     "overrides": {
-      "tmp": "^0.2.4"
+      "tmp": "^0.2.4",
+      "tar": ">=7.5.11",
+      "lodash": ">=4.17.23",
+      "@tootallnate/once": ">=3.0.1"
     },
     "onlyBuiltDependencies": [
       "electron",
