@@ -7,7 +7,7 @@ settings:
 overrides:
   tmp: ^0.2.4
   tar: '>=7.5.11'
-  lodash: '>=4.17.23'
+  lodash: '>=4.18.1'
   '@tootallnate/once': '>=3.0.1'
 
 importers:
@@ -1133,8 +1133,8 @@ packages:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
     deprecated: This package is deprecated. Use the optional chaining (?.) operator instead.
 
-  lodash@4.17.23:
-    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   log-symbols@4.1.0:
     resolution: {integrity: sha512-8XPvpAA8uyhfteu8pIvQxpJZ7SYYdpUivZpGy6sFsBuKRY/7rQGavedeB8aK+Zkyq6upMFVL/9AW6vOYzfRyLg==}
@@ -1963,7 +1963,7 @@ snapshots:
       interpret: 3.1.1
       jiti: 2.6.1
       listr2: 7.0.2
-      lodash: 4.17.23
+      lodash: 4.18.1
       log-symbols: 4.1.0
       node-fetch: 2.7.0(encoding@0.1.13)
       rechoir: 0.8.0
@@ -2866,7 +2866,7 @@ snapshots:
       debug: 4.4.3
       fs-extra: 9.1.0
       glob: 7.2.3
-      lodash: 4.17.23
+      lodash: 4.18.1
       parse-author: 2.0.0
       semver: 7.7.4
       tmp-promise: 3.0.3
@@ -2883,7 +2883,7 @@ snapshots:
       electron-installer-common: 0.10.4
       fs-extra: 9.1.0
       get-folder-size: 2.0.1
-      lodash: 4.17.23
+      lodash: 4.18.1
       word-wrap: 1.2.5
       yargs: 16.2.0
     transitivePeerDependencies:
@@ -2896,7 +2896,7 @@ snapshots:
       debug: 4.4.3
       electron-installer-common: 0.10.4
       fs-extra: 9.1.0
-      lodash: 4.17.23
+      lodash: 4.18.1
       word-wrap: 1.2.5
       yargs: 16.2.0
     transitivePeerDependencies:
@@ -2916,7 +2916,7 @@ snapshots:
       '@electron/asar': 3.4.1
       debug: 4.4.3
       fs-extra: 7.0.1
-      lodash: 4.17.23
+      lodash: 4.18.1
       temp: 0.9.4
     optionalDependencies:
       '@electron/windows-sign': 1.2.2
@@ -3368,7 +3368,7 @@ snapshots:
 
   lodash.get@4.4.2: {}
 
-  lodash@4.17.23: {}
+  lodash@4.18.1: {}
 
   log-symbols@4.1.0:
     dependencies:
