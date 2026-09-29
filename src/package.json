@@ -25,5 +25,10 @@
   },
   "dependencies": {
     "phaser": "^3.90.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "js-yaml": "4.3.2"
+    }
   }
 }
