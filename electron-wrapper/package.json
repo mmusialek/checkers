@@ -21,7 +21,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.11.2",
     "@electron-forge/plugin-fuses": "^7.11.2",
     "@electron/fuses": "^1.8.0",
-    "electron": "^39.8.5",
+    "electron": "^42.11.16",
     "lodash": "^4.17.23"
   },
   "dependencies": {
@@ -34,7 +34,11 @@
       "lodash": ">=4.18.1",
       "@tootallnate/once": ">=3.0.1",
       "@xmldom/xmldom": "0.9.12",
-      "fast-uri": "3.1.6"
+      "fast-uri": "^3.1.9",
+      "ip-address": ">=10.7.4",
+      "brace-expansion@1": "^1.1.21",
+      "brace-expansion@2": "^2.1.7",
+      "minimatch@9": "^11.0.1"
     },
     "onlyBuiltDependencies": [
       "electron",
